@@ -14,7 +14,7 @@ app.use(function(req, res, next) {
   });
 
 // Set up mongoose connection
-let dev_db_url = 'mongodb://dev-account:devuser1@ds113942.mlab.com:13942/sd-practice-tests-dev';
+let dev_db_url = 'mongodb://herokudev:herokudev1@ds023438.mlab.com:23438/heroku_v066m8l5';
 const mongoDB = dev_db_url;
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
