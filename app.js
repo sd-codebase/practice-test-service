@@ -26,7 +26,7 @@ app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
 
 enableRoutes(app);
 
-let port = 3001;
+let port = 3000;
 
 app.listen(port, () => {
     console.log('Server is up and running on port numner ' + port);
