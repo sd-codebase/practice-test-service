@@ -14,7 +14,7 @@ app.use(function(req, res, next) {
   });
 
 // Set up mongoose connection
-let dev_db_url = 'mongodb://127.0.0.1:27017/quiz';
+let dev_db_url = 'mongodb://dev-account:devuser1@ds113942.mlab.com:13942/sd-practice-tests-dev';
 const mongoDB = process.env.MONGODB_URI || dev_db_url;
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
