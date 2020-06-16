@@ -1,7 +1,15 @@
 import { TestService } from './test.service';
+const url = require('url');
 
 async function getTest (req, res, next) {
     const {status, data, err} = await TestService.getTest(req.params.testId);
+    if(status === 0) return next(err);
+    res.send(data);
+};
+
+async function getTests (req, res, next) {
+    const queryObject = url.parse(req.url,true).query;
+    const {status, data, err} = await TestService.getTests(queryObject);
     if(status === 0) return next(err);
     res.send(data);
 };
@@ -18,4 +26,4 @@ async function updateTest (req, res, next) {
     res.send(data);
 };
 
-export { getTest, createTest, updateTest };
+export { getTests, getTest, createTest, updateTest };

@@ -17,7 +17,10 @@ let QuestionSchema = new Schema({
     isSingleAnswer: {type: Boolean, required: true},
     answer: {type: Schema.Types.Mixed, required: true},
     isSubmitted: {type: Boolean},
-    userAnswer:{type: [String]}
+    userAnswer: {type: Schema.Types.Mixed},
+    isCorrectAnswer:{type:Boolean},
+    tags: {type:String},
+    level: {type:Number, default:2}, //1-pro, 2-advanced, 3-mid, 4-basic
 });
 
 

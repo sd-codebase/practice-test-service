@@ -31,12 +31,6 @@ export class QuestionService {
 
     static async createQuestion(question) {
         try {
-            if(!question.isOptionImage) {
-                question.isOptionImage = question.options.map( op => false);
-            }
-            question.chapter = new Chapter(
-                question
-            )
             question = new Question(
                 question
             );

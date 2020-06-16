@@ -11,8 +11,11 @@ let TestSchema = new Schema({
     correctCount: {type: Number, default:0},
     allottedTime: {type: Number, default:1200},
     completeTime: {type: Number, default:0},
+    isSubmitted: {type:Boolean, default: false},
     questions: {type:[QuestionSchema]},
-    percentage: {type:Number, default:0}
+    percentage: {type:Number, default:0},
+    createdAt: {type: Date, default: Date.now()},
+    updatedAt: {type: Date, default: Date.now()}
 });
 
 
