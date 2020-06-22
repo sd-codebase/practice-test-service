@@ -34,7 +34,7 @@ export class TestService {
 
     static async createTest({userId}) {
         try{
-            const {data:questions} = await QuestionService.getRandomQuestions(20);
+            const {data:questions} = await QuestionService.getRandomQuestions(25);
             const test = new Test({
                 userId,
                 questions,

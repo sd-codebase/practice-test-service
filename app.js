@@ -15,10 +15,13 @@ app.use(function(req, res, next) {
 
 // Set up mongoose connection
 let heroku_db_url = 'mongodb://herokudev:herokudev1@ds023438.mlab.com:23438/heroku_v066m8l5';
-let mongoLab_db_url = 'mongodb://dev-account:devuser1@ds113942.mlab.com:13942/sd-practice-tests-dev';
-let local_db_url = 'mongodb://127.0.0.1:27017/quiz';
+// let mongoLab_db_url = 'mongodb://dev-account:devuser1@ds113942.mlab.com:13942/sd-practice-tests-dev';
+// let local_db_url = 'mongodb://127.0.0.1:27017/quiz';
 
-const mongoDB = heroku_db_url; /*local_db_url;*/ /*mongoLab_db_url;*/
+const mongoDB = heroku_db_url;
+// const mongoDB = local_db_url;
+// const mongoDB = mongoLab_db_url;
+
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
