@@ -26,4 +26,10 @@ async function updateTest (req, res, next) {
     res.send(data);
 };
 
-export { getTests, getTest, createTest, updateTest };
+async function deleteTest (req, res, next) {
+    const {status, data, err} = await TestService.deleteTest(req.params.testId);
+    if(status === 0) return next(err);
+    res.send(data);
+};
+
+export { getTests, getTest, createTest, updateTest, deleteTest };

@@ -32,9 +32,24 @@ export class TestService {
         }
     }
 
+    static async deleteTest(testId) {
+        try {
+            let tests = await Test.deleteOne({'_id': testId}).exec();
+            return {
+                status: 1,
+                data: tests
+            };
+        } catch (err){
+            return {
+                status: 0,
+                err
+            };
+        }
+    }
+
     static async createTest({userId}) {
         try{
-            const {data:questions} = await QuestionService.getRandomQuestions(25);
+            const {data:questions} = await QuestionService.getRandomQuestions(60);
             const test = new Test({
                 userId,
                 questions,
@@ -80,20 +95,29 @@ export class TestService {
         const {data: testFromDb} = await TestService.getTest(test._id);
         test.questions.forEach( (subittedQuestion, i) => {
             const que = testFromDb.questions[i];
-            subittedQuestion.isCorrectAnswer = subittedQuestion.isSubmitted && (que.isSingleAnswer ? que.answer.toString() === subittedQuestion.userAnswer.toString()
-            : TestService.isCorrectAnswer(que.answer, subittedQuestion.userAnswer));
+            subittedQuestion.isCorrectAnswer = TestService.isCorrectAnswer(subittedQuestion, que);
         });
         test.correctCount = test.questions.filter( que => que.isCorrectAnswer).length;
         test.percentage = test.correctCount / test.questionCount * 100;
         return null;
     }
 
-    static isCorrectAnswer(answer, userAnswer) {
-        answer = answer.split(',').map( num => Number(num));
-        if (userAnswer && answer && userAnswer.length === answer.length) {
-            return answer.every( opNum => userAnswer.includes(opNum) );
-        } else{
-            return false;
+    static isCorrectAnswer(subittedQuestion, que) {
+        let returnValue = false;
+        if(!subittedQuestion.isSubmitted){
+            return returnValue;
+        } else if(subittedQuestion.question.statement.includes('*inputbox*')) {
+            return subittedQuestion.userAnswer && que.answer.toString() == subittedQuestion.userAnswer.toString();
+        } else if(que.isSingleAnswer){
+            return que.answer.toString() === subittedQuestion.userAnswer.toString();
+        } else {
+            let [answer, userAnswer] = [que.answer, subittedQuestion.userAnswer];
+            answer = answer.split(',').map( num => Number(num));
+            if (userAnswer && answer && userAnswer.length === answer.length) {
+                return answer.every( opNum => userAnswer.includes(opNum) );
+            } else{
+                return false;
+            }
         }
     }
 }

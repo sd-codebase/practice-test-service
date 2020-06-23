@@ -2,7 +2,7 @@ import {Schema, mongoose} from '../../lib/mongoose.lib';
 import { ChapterSchema } from '../chapter/chapter.model';
 
 let StatementSchema = new Schema({
-    statement: {type: String, required: true}, //if isImage true question itself would be image
+    statement: {type: String}, //if isImage true question itself would be image
     containedImage: {type: String, default:''}, //if hasImage true, then img will have value 
     isImage: {type: Boolean, default:false},
     hasImage: {type: Boolean, default:false},
