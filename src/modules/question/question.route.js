@@ -5,6 +5,7 @@ const QuestionRoutes = express.Router();
 
 
 QuestionRoutes.get('/:questionId', Question.getQuestion);
+QuestionRoutes.get('/answer/:questionId', Question.getAnswer);
 QuestionRoutes.post('/', Question.createQuestion);
 QuestionRoutes.post('/import', Question.uploadQuestions);
 

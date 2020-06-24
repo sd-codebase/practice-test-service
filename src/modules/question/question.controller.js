@@ -17,4 +17,10 @@ async function uploadQuestions (req, res, next) {
     res.send(uploadResult);
 };
 
-export { getQuestion, createQuestion, uploadQuestions };
+async function getAnswer (req, res, next) {
+    const {status, data, err} = await QuestionService.getAnswer(req.params.questionId);
+    if(status === 0) return next(err);
+    res.send(data);
+};
+
+export { getQuestion, createQuestion, uploadQuestions, getAnswer };

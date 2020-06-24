@@ -1,10 +1,18 @@
 import { QuestionModel as Question} from './question.model';
-import { ChapterModel as Chapter} from '../chapter/chapter.model';
 
 export class QuestionService {
     static async getQuestionById(questionId) {
         try {
-            const question = await Question.findOne({'_id': questionId}).exec();
+            const question = await Question.findById(questionId).exec();
+            return {status: 1, data: question};
+        } catch(err){
+            return {status: 0, err};
+        }
+    }
+
+    static async getQuestion(query) {
+        try {
+            const question = await Question.findOne(query).exec();
             return {status: 1, data: question};
         } catch(err){
             return {status: 0, err};
@@ -31,10 +39,22 @@ export class QuestionService {
 
     static async createQuestion(question) {
         try {
+            let {data: savedQuestion} = await QuestionService.getQuestion({
+                'question.statement': question.question.statement,
+                'chapter.stream': question.chapter.stream,
+                'chapter.class': question.chapter.class,
+                'chapter.subject': question.chapter.subject,
+                'chapter.chapter': question.chapter.chapter,
+            });
             question = new Question(
                 question
             );
-            question = await question.save();
+            if (!savedQuestion) {
+                question = await question.save();
+            } else {
+                question._id = savedQuestion._id;
+                await Question.updateOne({'_id': savedQuestion._id}, question).exec();
+            }
             return {status: 1, data: question};
         } catch(err){
             return {status: 0, err};
@@ -47,5 +67,15 @@ export class QuestionService {
             uploadResult.push(await QuestionService.createQuestion(questions[i]));
         }
         return uploadResult;
+    }
+
+    static async getAnswer(questionId) {
+        try {
+            let {data: question} = await QuestionService.getQuestionById(questionId);
+            let que = question.toJSON();
+            return {status: 1, data: {answer: que.answer, answerDescription: que.answerDescription}};
+        } catch(err){
+            return {status: 0, err};
+        }
     }
 }

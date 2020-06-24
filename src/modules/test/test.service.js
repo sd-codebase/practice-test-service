@@ -49,7 +49,12 @@ export class TestService {
 
     static async createTest({userId}) {
         try{
-            const {data:questions} = await QuestionService.getRandomQuestions(60);
+            let {data:questions} = await QuestionService.getRandomQuestions(60);
+            questions = questions.map( question => {
+                question = question.toJSON();
+                question.id = question._id;
+                return question;
+            });
             const test = new Test({
                 userId,
                 questions,
@@ -112,7 +117,7 @@ export class TestService {
             return que.answer.toString() === subittedQuestion.userAnswer.toString();
         } else {
             let [answer, userAnswer] = [que.answer, subittedQuestion.userAnswer];
-            answer = answer.split(',').map( num => Number(num));
+            answer = answer.split(',');
             if (userAnswer && answer && userAnswer.length === answer.length) {
                 return answer.every( opNum => userAnswer.includes(opNum) );
             } else{
