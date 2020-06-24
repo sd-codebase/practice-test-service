@@ -47,9 +47,9 @@ export class TestService {
         }
     }
 
-    static async createTest({userId}) {
+    static async createTest({userId, questionCount, subject}) {
         try{
-            let {data:questions} = await QuestionService.getRandomQuestions(60);
+            let {data:questions} = await QuestionService.getRandomQuestions(questionCount, subject);
             questions = questions.map( question => {
                 question = question.toJSON();
                 question.id = question._id;
@@ -61,6 +61,7 @@ export class TestService {
                 chapter: questions[0].chapter,
                 questionCount: questions.length
             });
+            test.allottedTime = questions.length * 600;
             let testDoc = await test.save();
             testDoc = testDoc.toJSON();
             testDoc.questions.forEach( que => delete que.answer);

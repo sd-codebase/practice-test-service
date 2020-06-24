@@ -28,9 +28,13 @@ export class QuestionService {
         }
     }
 
-    static async getRandomQuestions(limit) {
+    static async getRandomQuestions(limit,subject) {
         try {
-            const question = await Question.find({}).limit(limit).exec();
+            let query = {};
+            if(subject) {
+                query = {'chapter.subject': subject};
+            }
+            const question = await Question.find(query).limit(limit).exec();
             return {status: 1, data: question};
         } catch(err){
             return {status: 0, err};
