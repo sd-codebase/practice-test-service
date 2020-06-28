@@ -9,13 +9,16 @@ let TestSchema = new Schema({
     questionCount: {type: Number},
     attemptCount: {type: Number, default:0},
     correctCount: {type: Number, default:0},
-    allottedTime: {type: Number, default:1200},
+    allottedTime: {type: Number, default:0},
     completeTime: {type: Number, default:0},
     isSubmitted: {type:Boolean, default: false},
-    questions: {type:[SubQuestionSchema]},
+    questions: {type:[SubQuestionSchema]}, // questions=>!isPredefined or questionIds=>isPredefined
+    questionIds: {type:[String]},
     percentage: {type:Number, default:0},
     createdAt: {type: Date, default: Date.now()},
-    updatedAt: {type: Date, default: Date.now()}
+    updatedAt: {type: Date, default: Date.now()},
+    isPredefined: {type:Boolean, default:false},
+    testName:{type:String}
 });
 
 

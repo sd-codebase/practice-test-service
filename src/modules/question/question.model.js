@@ -22,6 +22,10 @@ let QuestionSchema = new Schema({
     isCorrectAnswer:{type:Boolean},
     tags: {type:String},
     level: {type:Number, default:2}, //1-pro, 2-advanced, 3-mid, 4-basic
+    createdBy: {type: String},
+    verifiedBy: {type: String},
+    isVerified: {type: Boolean},
+    imagePath: {type: String},
 });
 
 let SubQuestionSchema = new Schema({
@@ -37,6 +41,10 @@ let SubQuestionSchema = new Schema({
     isCorrectAnswer:{type:Boolean},
     tags: {type:String},
     level: {type:Number, default:2}, //1-pro, 2-advanced, 3-mid, 4-basic
+    createdBy: {type: String},
+    verifiedBy: {type: String},
+    isVerified: {type: Boolean},
+    imagePath: {type: String},
 },{ _id : false });
 
 

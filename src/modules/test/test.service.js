@@ -5,6 +5,13 @@ export class TestService {
     static async getTest(testId) {
         try {
             let test = await Test.findOne({'_id': testId}).exec();
+            if(test.isPredefined){
+                test = test.toJSON();
+                let res = await QuestionService.getQuestionsByIdIn(test.questionIds);
+                let questions = res.data.map( question => question.toJSON());
+                questions.forEach(question => {question.id=question._id});
+                test.questions = questions;
+            }
             return {
                 status: 1,
                 data: test
@@ -31,6 +38,22 @@ export class TestService {
             };
         }
     }
+    
+    static async getPredefinedTests() {
+        try {
+            let tests = await Test.find({'isPredefined': true}).exec();
+            return {
+                status: 1,
+                data: tests
+            };
+        } catch (err){
+            return {
+                status: 0,
+                err
+            };
+        }
+    }
+
 
     static async deleteTest(testId) {
         try {
@@ -44,6 +67,46 @@ export class TestService {
                 status: 0,
                 err
             };
+        }
+    }
+
+    static async uploadPredefinedTest({testmeta, questions, userId}) {
+        try{
+            let test = await Test.findOne({'testName': testmeta.name}).exec();
+            if(!test) {
+                const uploadResult = [];
+                for(let i=0; i<questions.length; i++) {
+                    uploadResult.push(await QuestionService.createQuestion(questions[i], userId));
+                }
+                let questionIds = uploadResult.map(res => res.data._id);
+                const test = new Test({
+                    questionIds,
+                    questionCount: questions.length,
+                    testName: testmeta.name,
+                    isPredefined: true,
+                    status: 2,
+                    isSubmitted: true
+                });
+                let testDoc = await test.save();
+                testDoc = testDoc.toJSON();
+                testDoc.questions.forEach( que => delete que.answer);
+                return {
+                    status: 1,
+                    data: testDoc
+                };
+            } else {
+                test = test.toJSON();
+                test.questions.forEach( que => delete que.answer);
+                return {
+                    status: 1,
+                    data: test
+                };
+            }
+        } catch(err){
+            return {
+                status: 0,
+                err
+            }
         }
     }
 
@@ -61,7 +124,7 @@ export class TestService {
                 chapter: questions[0].chapter,
                 questionCount: questions.length
             });
-            test.allottedTime = questions.length * 600;
+            test.allottedTime = questions.length * 120;
             let testDoc = await test.save();
             testDoc = testDoc.toJSON();
             testDoc.questions.forEach( que => delete que.answer);
@@ -75,7 +138,6 @@ export class TestService {
                 err
             }
         }
-
     }
 
     static async updateTest(test) {

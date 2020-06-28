@@ -8,6 +8,26 @@ export class QuestionService {
         } catch(err){
             return {status: 0, err};
         }
+    } 
+
+    static async getQuestions(query) {
+        try {
+            let questions = await Question.find(query).exec();
+            questions = questions.map( question => question.toJSON());
+            questions.forEach(question => {question.id=question._id});
+            return {status: 1, data: questions};
+        } catch(err){
+            return {status: 0, err};
+        }
+    }
+
+    static async verifyQuestion(questionId) {
+        try {
+            const updated = await Question.updateOne({'_id': questionId}, {'isVerified': true}).exec();
+            return {status: 1, data: updated};
+        } catch(err){
+            return {status: 0, err};
+        }
     }
 
     static async getQuestion(query) {
@@ -41,7 +61,7 @@ export class QuestionService {
         }
     }
 
-    static async createQuestion(question) {
+    static async createQuestion(question, userToVerify) {
         try {
             let {data: savedQuestion} = await QuestionService.getQuestion({
                 'question.statement': question.question.statement,
@@ -53,6 +73,8 @@ export class QuestionService {
             question = new Question(
                 question
             );
+            question.verifiedBy = userToVerify;
+            question.isVerified = false;
             if (!savedQuestion) {
                 question = await question.save();
             } else {
@@ -65,10 +87,10 @@ export class QuestionService {
         }
     }
 
-    static async uploadQuestions(questions){
+    static async uploadQuestions({questions, userId}){
         const uploadResult = [];
         for(let i=0; i<questions.length; i++) {
-            uploadResult.push(await QuestionService.createQuestion(questions[i]));
+            uploadResult.push(await QuestionService.createQuestion(questions[i], userId));
         }
         return uploadResult;
     }

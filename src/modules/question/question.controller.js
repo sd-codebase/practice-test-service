@@ -6,6 +6,24 @@ async function getQuestion (req, res, next) {
     res.send(data);
 };
 
+async function getMatchingQuestion (req, res, next) {
+    const {status, data, err} = await QuestionService.getQuestion(req.body);
+    if(status === 0) return next(err);
+    res.send(data);
+};
+
+async function getQuestions(req, res, next) {
+    const {status, data, err} = await QuestionService.getQuestions(req.query);
+    if(status === 0) return next(err);
+    res.send(data);
+}
+
+async function verifyQuestion(req, res, next) {
+    const {status, data, err} = await QuestionService.verifyQuestion(req.body.questionId);
+    if(status === 0) return next(err);
+    res.send(data);
+}
+
 async function createQuestion (req, res, next) {
     const {status, data, err} = await QuestionService.createQuestion(req.body);
     if(status === 0) return next(err);
@@ -23,4 +41,4 @@ async function getAnswer (req, res, next) {
     res.send(data);
 };
 
-export { getQuestion, createQuestion, uploadQuestions, getAnswer };
+export { getQuestion, getQuestions, createQuestion, uploadQuestions, getAnswer, verifyQuestion, getMatchingQuestion };
