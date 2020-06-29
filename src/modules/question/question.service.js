@@ -65,10 +65,11 @@ export class QuestionService {
         try {
             let {data: savedQuestion} = await QuestionService.getQuestion({
                 'question.statement': question.question.statement,
-                'chapter.stream': question.chapter.stream,
-                'chapter.class': question.chapter.class,
+                'options[0].statement': question.options[0].statement,
+                'options[1].statement': question.options[1].statement,
+                'options[2].statement': question.options[2].statement,
+                'options[3].statement': question.options[3].statement,
                 'chapter.subject': question.chapter.subject,
-                'chapter.chapter': question.chapter.chapter,
             });
             question = new Question(
                 question
