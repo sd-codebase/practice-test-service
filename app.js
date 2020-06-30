@@ -2,7 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import { enableRoutes } from './src/routes';
 import mongoose from 'mongoose';
-import dbUrl from './config';
+import { dburl } from './config';
 
 // initialize our express app
 const app = express();
@@ -15,7 +15,7 @@ app.use(function(req, res, next) {
 });
 
 
-mongoose.connect(dbUrl);
+mongoose.connect(dburl);
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
