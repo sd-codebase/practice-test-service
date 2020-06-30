@@ -8,19 +8,11 @@ import dbUrl from './config';
 const app = express();
 
 app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
-    next();
-  });
-
-// Set up mongoose connection
-// let heroku_db_url = 'mongodb://herokudev:herokudev1@ds023438.mlab.com:23438/heroku_v066m8l5';
-// const mongoDB = heroku_db_url;
-// let mongoLab_db_url = 'mongodb://dev-account:devuser1@ds113942.mlab.com:13942/sd-practice-tests-dev';
-// const mongoDB = mongoLab_db_url;
-// let local_db_url = 'mongodb://127.0.0.1:27017/quiz';
-// const mongoDB = local_db_url;
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
+  next();
+});
 
 
 mongoose.connect(dbUrl);
