@@ -5,7 +5,7 @@ export class TestService {
     static async getTest(testId) {
         try {
             let test = await Test.findOne({'_id': testId}).exec();
-            if(test.isPredefined){
+            if(test && test.isPredefined){
                 test = test.toJSON();
                 let res = await QuestionService.getQuestionsByIdIn(test.questionIds);
                 let questions = res.data.map( question => question.toJSON());

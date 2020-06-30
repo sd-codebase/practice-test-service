@@ -2,6 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import { enableRoutes } from './src/routes';
 import mongoose from 'mongoose';
+import dbUrl from './config';
 
 // initialize our express app
 const app = express();
@@ -14,15 +15,15 @@ app.use(function(req, res, next) {
   });
 
 // Set up mongoose connection
-let heroku_db_url = 'mongodb://herokudev:herokudev1@ds023438.mlab.com:23438/heroku_v066m8l5';
-const mongoDB = heroku_db_url;
+// let heroku_db_url = 'mongodb://herokudev:herokudev1@ds023438.mlab.com:23438/heroku_v066m8l5';
+// const mongoDB = heroku_db_url;
 // let mongoLab_db_url = 'mongodb://dev-account:devuser1@ds113942.mlab.com:13942/sd-practice-tests-dev';
 // const mongoDB = mongoLab_db_url;
 // let local_db_url = 'mongodb://127.0.0.1:27017/quiz';
 // const mongoDB = local_db_url;
 
 
-mongoose.connect(mongoDB);
+mongoose.connect(dbUrl);
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
