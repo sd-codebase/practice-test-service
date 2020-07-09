@@ -64,11 +64,11 @@ export class QuestionService {
     static async createQuestion(question, userToVerify) {
         try {
             let {data: savedQuestion} = await QuestionService.getQuestion({
-                'question.statement': question.question.statement,
-                'options[0].statement': question.options[0].statement,
-                'options[1].statement': question.options[1].statement,
-                'options[2].statement': question.options[2].statement,
-                'options[3].statement': question.options[3].statement,
+                'question': question.question,
+                'options[0]': question.options[0],
+                'options[1]': question.options[1],
+                'options[2]': question.options[2],
+                'options[3]': question.options[3],
                 'chapter.subject': question.chapter.subject,
             });
             question = new Question(
@@ -79,7 +79,8 @@ export class QuestionService {
             if (!savedQuestion) {
                 question = await question.save();
             } else {
-                question._id = savedQuestion._id;
+                // question._id = savedQuestion._id;
+                delete question._id;
                 await Question.updateOne({'_id': savedQuestion._id}, question).exec();
             }
             return {status: 1, data: question};

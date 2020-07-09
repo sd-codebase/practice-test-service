@@ -147,7 +147,7 @@ export class TestService {
             delete test._id;
             test.isSubmitted = true;
             test.updatedAt = Date.now();
-            await Test.updateOne({'_id': id}, test).exec();
+            await Test.updateOne({'_id': id}, {$set:test}).exec();
             const testRes = await TestService.getTest(id);
             return testRes;
         } catch(err){
