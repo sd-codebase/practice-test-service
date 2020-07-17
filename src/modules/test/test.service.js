@@ -73,12 +73,13 @@ export class TestService {
     static async uploadPredefinedTest({testmeta, questions, userId}) {
         try{
             let test = await Test.findOne({'testName': testmeta.name}).exec();
+            const uploadResult = [];
+            for(let i=0; i<questions.length; i++) {
+                uploadResult.push(await QuestionService.createQuestion(questions[i], userId));
+            }
+            let questionIds = uploadResult.map(res => res.data._id);
+            
             if(!test) {
-                const uploadResult = [];
-                for(let i=0; i<questions.length; i++) {
-                    uploadResult.push(await QuestionService.createQuestion(questions[i], userId));
-                }
-                let questionIds = uploadResult.map(res => res.data._id);
                 const test = new Test({
                     questionIds,
                     questionCount: questions.length,
@@ -95,6 +96,9 @@ export class TestService {
                     data: testDoc
                 };
             } else {
+                test = await Test.findOneAndUpdate({'testName': testmeta.name}, { questionIds }, {
+                    new: true
+                });
                 test = test.toJSON();
                 test.questions.forEach( que => delete que.answer);
                 return {

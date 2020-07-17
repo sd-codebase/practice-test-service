@@ -5,6 +5,7 @@ let ChapterSchema = new Schema({
     class: {type: String},
     subject: {type: String},
     chapter: {type: String},
+    topic: {type: String},
 });
 
 let SubChapterSchema = new Schema({
@@ -12,6 +13,7 @@ let SubChapterSchema = new Schema({
     class: {type: String},
     subject: {type: String},
     chapter: {type: String},
+    topic: {type: String},
 },{ _id : false });
 
 

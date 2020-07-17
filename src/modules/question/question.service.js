@@ -63,28 +63,41 @@ export class QuestionService {
 
     static async createQuestion(question, userToVerify) {
         try {
-            let {data: savedQuestion} = await QuestionService.getQuestion({
+            const criteria = {
                 'question': question.question,
-                'options[0]': question.options[0],
-                'options[1]': question.options[1],
-                'options[2]': question.options[2],
-                'options[3]': question.options[3],
+                'options.0': question.options[0],
+                'options.1': question.options[1],
+                'options.2': question.options[2],
+                'options.3': question.options[3],
                 'chapter.subject': question.chapter.subject,
-            });
-            question = new Question(
-                question
-            );
-            question.verifiedBy = userToVerify;
-            question.isVerified = false;
+            };
+            let {data: savedQuestion} = await QuestionService.getQuestion(criteria);
             if (!savedQuestion) {
+                question = new Question(
+                    question
+                );
+                question.verifiedBy = userToVerify;
+                question.isVerified = false;
                 question = await question.save();
             } else {
-                // question._id = savedQuestion._id;
-                delete question._id;
-                await Question.updateOne({'_id': savedQuestion._id}, question).exec();
+                let tags = savedQuestion.tags;
+                if (tags && tags.indexOf(question.tags) === -1) {
+                     tags = tags + ', ' + question.tags
+                } else {
+                    tags = question.tags;
+                }
+                question = await Question.findOneAndUpdate(criteria, {
+                    level : question.level,
+                    answer : question.answer,
+                    answerDescription : question.answerDescription,
+                    isSingleAnswer : question.isSingleAnswer,
+                    imagePath : question.imagePath,
+                    tags: tags,
+                }, {new: true});
             }
             return {status: 1, data: question};
         } catch(err){
+            console.log(err)
             return {status: 0, err};
         }
     }
@@ -105,5 +118,15 @@ export class QuestionService {
         } catch(err){
             return {status: 0, err};
         }
+    }
+}
+
+class QuestionToUpdate{
+    constructor({level, answer, answerDescription, isSingleAnswer, imagePath}) {
+        this.level = level;
+        this.answer = answer;
+        this.answerDescription = answerDescription;
+        this.isSingleAnswer = isSingleAnswer;
+        this.imagePath = imagePath;
     }
 }
