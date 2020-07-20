@@ -11,5 +11,6 @@ QuestionRoutes.post('/matching-question', Question.getMatchingQuestion);
 QuestionRoutes.post('/', Question.createQuestion);
 QuestionRoutes.post('/import', Question.uploadQuestions);
 QuestionRoutes.post('/verify', Question.verifyQuestion);
+QuestionRoutes.post('/verify-update', Question.updateAndVerifyQuestion);
 
 export { QuestionRoutes };

@@ -41,4 +41,10 @@ async function getAnswer (req, res, next) {
     res.send(data);
 };
 
-export { getQuestion, getQuestions, createQuestion, uploadQuestions, getAnswer, verifyQuestion, getMatchingQuestion };
+async function updateAndVerifyQuestion(req, res, next) {
+    const {status, data, err} = await QuestionService.updateAndVerifyQuestion(req.body);
+    if(status === 0) return next(err);
+    res.send(data);
+}
+
+export { getQuestion, getQuestions, createQuestion, uploadQuestions, getAnswer, verifyQuestion, getMatchingQuestion, updateAndVerifyQuestion };

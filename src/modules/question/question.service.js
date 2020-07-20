@@ -30,6 +30,21 @@ export class QuestionService {
         }
     }
 
+    static async updateAndVerifyQuestion(question) {
+        try {
+            const updated = await Question.updateOne({'_id': question._id}, {
+                isVerified: true,
+                question: question.question,
+                options: question.options,
+                answer : question.answer,
+                answerDescription : question.answerDescription,
+            }).exec();
+            return {status: 1, data: updated};
+        } catch(err){
+            return {status: 0, err};
+        }
+    }
+
     static async getQuestion(query) {
         try {
             const question = await Question.findOne(query).exec();
