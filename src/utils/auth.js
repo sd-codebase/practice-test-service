@@ -34,7 +34,7 @@ export const handleAuth = app => {
         const apiUrl = req.originalUrl;
         const httpMethod = req.method;
         // console.log(apiUrl, httpMethod);
-        if (isAuthRequired(httpMethod, apiUrl)) {
+        if (httpMethod !== 'OPTIONS' && isAuthRequired(httpMethod, apiUrl)) {
             let authHeader = req.header('Authorization');
             let sessionID = authHeader && authHeader.split(' ')[1];
             if (sessionID) {
