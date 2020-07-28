@@ -22,6 +22,6 @@ const chaptersUrl = `/${API}/${ROUTES.Chapter}/`;
 const notesUrl = `/${API}/${ROUTES.Note}/`;
 
 export const authRoutes = [
-    dashboardUrl, testsUrl, questionsUrl, usersUrl,
+    dashboardUrl, testsUrl, questionsUrl,
     chaptersUrl, notesUrl
 ];
