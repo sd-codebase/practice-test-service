@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import { enableRoutes } from './src/routes';
 import mongoose from 'mongoose';
 import { dburl } from './config';
+import { handleAuth } from './src/utils/auth';
 
 // initialize our express app
 const app = express();
@@ -22,6 +23,8 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 app.use(bodyParser.json({limit: '10mb', extended: true}));
 app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
+
+handleAuth(app);
 
 enableRoutes(app);
 

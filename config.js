@@ -4,3 +4,4 @@ export const dburl = 'mongodb://dev-account:devuser1@ds113942.mlab.com:13942/sd-
 // const mlabSandbox = 'mongodb://dev-account:devuser1@ds113942.mlab.com:13942/sd-practice-tests-dev';
 // export const dburl = 'mongodb://127.0.0.1:27017/quiz';
 // export const dburl = 'mongodb://127.0.0.1:27017/testquiz';
+export const secretkey = 'shared-secret-key';
