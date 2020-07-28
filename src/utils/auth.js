@@ -9,7 +9,6 @@ export const isAuthRequired = (httpMethod, url) => {
     //   if (routeObj.method === httpMethod && routeObj.url === url) {
     //     return true;
     //   }
-        console.log(url, routeObj)
         if (url.indexOf(routeObj) !== -1) {
             return true;
         }
@@ -33,19 +32,21 @@ export const handleAuth = app => {
     app.use(async (req, res, next) => {
         const apiUrl = req.originalUrl;
         const httpMethod = req.method;
-        // console.log(apiUrl, httpMethod);
         if (httpMethod !== 'OPTIONS' && isAuthRequired(httpMethod, apiUrl)) {
             let authHeader = req.header('Authorization');
             let sessionID = authHeader && authHeader.split(' ')[1];
             if (sessionID) {
                 let userData = verifyJWTToken(sessionID);
-                if (userData && (await UserService.getUserByDetails({email:userData.email, password: userData.password, _id: userData._id})).status !== 1) {
-                    res.status(401).send({
-                        error: {
-                            reason: "Unauthorized Access",
-                            code: 401
-                        }
-                    });
+                if (userData) {
+                    const user = await UserService.getUserByDetails({email:userData.email, password: userData.password, _id: userData._id});
+                    if(user.status !== 1) {
+                        res.status(401).send({
+                            error: {
+                                reason: "Unauthorized Access",
+                                code: 401
+                            }
+                        });
+                    }
                 } else {
                     res.status(401).send({
                         error: {
