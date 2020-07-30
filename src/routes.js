@@ -16,7 +16,7 @@ function enableRoutes(app) {
     app.use(`/${API}/${ROUTES.Chapter}`, ChapterRoutes);
     app.use(`/${API}/${ROUTES.Note}`, NotesRoutes);
     app.use('/', function(req, res, next){
-        res.send('Assessment portal services are running')
+        res.end('Assessment portal services are running')
     });
 }
 
