@@ -15,11 +15,8 @@ function enableRoutes(app) {
     app.use(`/${API}/${ROUTES.User}`, UserRoutes);
     app.use(`/${API}/${ROUTES.Chapter}`, ChapterRoutes);
     app.use(`/${API}/${ROUTES.Note}`, NotesRoutes);
-    app.use('/', function(req, res, next){res.send({
-            ENV: process.env.ENV || ENV,
-            SECRETE_KEY : process.env.SECRETE_KEY || SECRETE_KEY,
-            MONGO_URI : process.env.MONGO_URI || MONGO_URI,
-        })
+    app.use('/', function(req, res, next){
+        res.send('Assessment portal services are running')
     });
 }
 
