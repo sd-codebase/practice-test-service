@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken';
 import { authRoutes } from './auth-routes';
 import { UserService } from './../modules/user/user.service';
+import { SECRETE_KEY } from './../../config';
 
-const SECRET_KEY = "JWT_SECRET";
+const SECRET_KEY = process.env.SECRETE_KEY || SECRETE_KEY;
 
 export const isAuthRequired = (httpMethod, url) => {
     for (let routeObj of authRoutes) {

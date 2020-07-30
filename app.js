@@ -2,11 +2,13 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import { enableRoutes } from './src/routes';
 import mongoose from 'mongoose';
-import { dburl } from './config';
+import { MONGO_URI, ENV } from './config';
 import { handleAuth } from './src/utils/auth';
 
 // initialize our express app
 const app = express();
+
+const environment = process.env.ENV || ENV;
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -16,7 +18,7 @@ app.use(function(req, res, next) {
 });
 
 
-mongoose.connect(dburl);
+mongoose.connect(process.env.MONGO_URI || MONGO_URI);
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
