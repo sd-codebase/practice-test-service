@@ -126,7 +126,8 @@ export class TestService {
                 userId,
                 questions,
                 chapter: questions[0].chapter,
-                questionCount: questions.length
+                questionCount: questions.length,
+                testName: subject
             });
             test.allottedTime = questions.length * 120;
             let testDoc = await test.save();

@@ -5,6 +5,8 @@ let UserSchema = new Schema({
     password: {type: String},
     name: {type: String},
     email_verified: {type: Boolean, default: false},
+    role: {type: Number, default: 0},
+    belongsTo: {type: String},
     course: {type: String},
     createdAt: {type: Date, default: Date.now()},
     updatedAt: {type: Date, default: Date.now()}
