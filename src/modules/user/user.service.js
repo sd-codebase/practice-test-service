@@ -39,6 +39,29 @@ export class UserService {
         }
     }
 
+    static async fetchUsersByInstructor(instructorId) {
+        try {
+            const users = await User.find({belongsTo: instructorId}).sort({ updatedAt : -1}).exec();
+            if(users) {
+                return {
+                    status: 1,
+                    data: users
+                };
+            } else {
+                return {
+                    status: 0,
+                    err: 'No users exist'
+                };
+            }
+            
+        } catch (err){
+            return {
+                status: 0,
+                err
+            };
+        }
+    }
+
     static async saveUser(user) {
         try {
             let savedUser = await User.findOne({'email': user.email}).exec();
@@ -46,6 +69,30 @@ export class UserService {
             if (savedUser) {
                 user._id = savedUser._id;
                 await User.updateOne({'_id': savedUser._id}, user).exec();
+            } else {
+                user.save();
+            }
+            return {
+                status: 1,
+                data: user
+            };
+        } catch (err){
+            return {
+                status: 0,
+                err
+            };
+        }
+    }
+
+    static async createUserBelongsToInstructor(user) {
+        try {
+            let savedUser = await User.findOne({'email': user.email}).exec();
+            user = new User(user);
+            if (savedUser) {
+                return {
+                    status: 0,
+                    err : {message: 'User already exists.'}
+                };
             } else {
                 user.save();
             }
