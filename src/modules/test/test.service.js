@@ -75,6 +75,7 @@ export class TestService {
             let test = await Test.findOne({'testName': testmeta.name}).exec();
             const uploadResult = [];
             for(let i=0; i<questions.length; i++) {
+                questions[i].sortOrder = i;
                 uploadResult.push(await QuestionService.createQuestion(questions[i], userId));
             }
             let questionIds = uploadResult.map(res => res.data._id);
