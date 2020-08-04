@@ -9,6 +9,9 @@ UserRoutes.get('/:userId', User.getUser);
 UserRoutes.post('/', User.saveUser);
 UserRoutes.get('/fetch-guests/:userId', User.fetchUsersByInstructor);
 UserRoutes.post('/add-guests', User.createUserBelongsToInstructor);
+UserRoutes.post('/create-guest-user-group', User.createGuestUserGroup);
+UserRoutes.post('/update-users-to-group', User.updateUserToGroup);
+UserRoutes.get('/user-groups/:userId', User.getUserGroups);
 UserRoutes.post('/authenticate', User.authenticateUser);
 
 export { UserRoutes };

@@ -12,7 +12,7 @@ export class QuestionService {
 
     static async getQuestions(query) {
         try {
-            let questions = await Question.find(query).exec();
+            let questions = await Question.find(query).sort({ _id : 1}).exec();
             questions = questions.map( question => question.toJSON());
             questions.forEach(question => {question.id=question._id});
             return {status: 1, data: questions};

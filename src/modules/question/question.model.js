@@ -17,6 +17,7 @@ let QuestionSchema = new Schema({
     verifiedBy: {type: String},
     isVerified: {type: Boolean},
     imagePath: {type: String},
+    createdAt: {type: Date, default: Date.now()},
 });
 
 let SubQuestionSchema = new Schema({
@@ -36,6 +37,7 @@ let SubQuestionSchema = new Schema({
     verifiedBy: {type: String},
     isVerified: {type: Boolean},
     imagePath: {type: String},
+    createdAt: {type: Date, default: Date.now()},
 },{ _id : false });
 
 
