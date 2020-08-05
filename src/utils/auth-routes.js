@@ -12,6 +12,7 @@ export const ROUTES = {
     User: 'users',
     Chapter: 'chapters',
     Note: 'notes',
+    MockTest: 'mock-tests'
 };
 
 const dashboardUrl = `/${API}/${ROUTES.Dashboard}/`;
@@ -20,8 +21,9 @@ const questionsUrl = `/${API}/${ROUTES.Question}/`;
 const usersUrl = `/${API}/${ROUTES.User}/`;
 const chaptersUrl = `/${API}/${ROUTES.Chapter}/`;
 const notesUrl = `/${API}/${ROUTES.Note}/`;
+const mockTestsUrl = `/${API}/${ROUTES.MockTest}/`;
 
 export const authRoutes = [
     dashboardUrl, testsUrl, questionsUrl,
-    chaptersUrl, notesUrl
+    chaptersUrl, notesUrl, mockTestsUrl,
 ];

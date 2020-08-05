@@ -4,8 +4,8 @@ import { TestRoutes } from './modules/test/test.route';
 import { ChapterRoutes } from './modules/chapter/chapter.route';
 import { UserRoutes } from './modules/user/user.route';
 import { NotesRoutes } from './modules/notes/notes.route';
+import { MockTestRoutes } from './modules/mock-test/mock-test.route';
 import { API, ROUTES } from './utils/auth-routes';
-import { MONGO_URI, ENV, SECRETE_KEY } from './../config';
 
 
 function enableRoutes(app) {
@@ -15,6 +15,7 @@ function enableRoutes(app) {
     app.use(`/${API}/${ROUTES.User}`, UserRoutes);
     app.use(`/${API}/${ROUTES.Chapter}`, ChapterRoutes);
     app.use(`/${API}/${ROUTES.Note}`, NotesRoutes);
+    app.use(`/${API}/${ROUTES.MockTest}`, MockTestRoutes);
     app.use('/', function(req, res, next){
         res.end('Assessment portal services are running')
     });
