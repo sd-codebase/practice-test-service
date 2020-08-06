@@ -4,6 +4,7 @@ import { SubChapterSchema } from '../chapter/chapter.model';
 
 let TestSchema = new Schema({
     userId: {type: String},
+    testConfigId: {type: String},
     status: {type: Number, default:0},//0-created, 1- started, 2-finished
     chapter: {type: SubChapterSchema},
     questionCount: {type: Number},

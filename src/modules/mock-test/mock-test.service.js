@@ -1,9 +1,22 @@
-import { MockTestModel as MockTest, MockTestSectionModel as MockTestSection } from './mock-test.model';
+import { 
+    MockTestModel as MockTest,
+    MockTestSectionModel as MockTestSection,
+    MockTestSectionBlockModel as MockTestSectionBlock,
+} from './mock-test.model';
 
 export class MockTestService {
     static async getMockTestById(testId) {
         try {
             const mockTest = await MockTest.findById(testId).exec();
+            return {status: 1, data: mockTest};
+        } catch(err){
+            return {status: 0, err};
+        }
+    }
+
+    static async getMockTestByQuery(query) {
+        try {
+            const mockTest = await MockTest.findOne(query).exec();
             return {status: 1, data: mockTest};
         } catch(err){
             return {status: 0, err};
@@ -32,14 +45,14 @@ export class MockTestService {
         }
     }
 
-    static async createMockTest(mocktest) {
+    static async createMockTest(testConfig) {
         try {
-            const sections = new Array();
-            mocktest.sections.forEach( section => sections.push(new MockTestSection(section)));
-            delete mocktest.sections;
-            mocktest = new MockTest(mocktest);
-            const mockTest = await mocktest.save();
-            await MockTest.updateOne({'_id': mockTest._id}, {$set: {sections: sections}}).exec();
+            const sections = testConfig.sections;
+            delete testConfig.sections;
+            const mocktestConfig = new MockTest(testConfig);
+            const mockTest = await mocktestConfig.save();
+            testConfig.sections = sections;
+            await MockTest.updateOne({'_id': mockTest._id}, {$set: testConfig}).exec();
             const savedMockTest = await MockTestService.getMockTestById(mockTest._id);
             return {status: 1, data: savedMockTest.data};
         } catch(err){
@@ -49,6 +62,7 @@ export class MockTestService {
 
     static async updateMockTest(testId, mocktest) {
         try {
+            mocktest.updatedAt = Date.now();
             const mockTestUpdated = await MockTest.updateOne({'_id': testId}, {$set: mocktest}).exec();
             return {status: 1, data: mockTestUpdated};
         } catch(err){

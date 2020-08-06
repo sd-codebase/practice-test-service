@@ -26,6 +26,12 @@ async function createTest (req, res, next) {
     res.send(data);
 };
 
+async function createMockTest (req, res, next) {
+    const {status, data, err} = await TestService.createMockTest(req.body);
+    if(status === 0) return next(err);
+    res.send(data);
+};
+
 async function uploadPredefinedTest (req, res, next) {
     const {status, data, err} = await TestService.uploadPredefinedTest(req.body);
     if(status === 0) return next(err);
@@ -44,4 +50,8 @@ async function deleteTest (req, res, next) {
     res.send(data);
 };
 
-export { getTests, getTest, createTest, updateTest, deleteTest, uploadPredefinedTest, getPerdefinedTests };
+export { 
+    getTests, getTest, createTest,
+    updateTest, deleteTest, uploadPredefinedTest,
+    getPerdefinedTests, createMockTest,
+};

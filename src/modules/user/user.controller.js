@@ -14,7 +14,13 @@ async function saveUser (req, res, next) {
 };
 
 async function authenticateUser (req, res, next) {
-    const {status, data, err} = await UserService.authenticateUser(req.body);
+    let user;
+    if (req.body.userType === 'Guest') {
+        user = await UserService.authenticateGuestUser(req.body);
+    } else {
+        user = await UserService.authenticateUser(req.body);
+    }
+    const {status, data, err} = user;
     if(status === 0) return next(err);
     res.send(data);
 };

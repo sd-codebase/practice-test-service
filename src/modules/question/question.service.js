@@ -63,6 +63,47 @@ export class QuestionService {
         }
     }
 
+    static async getQuestionsBySectionCriteria(sections, course) {
+        try {
+            const sectionList = [];
+            sections.forEach( section => {
+                const sec = {...section};
+                sec.blocks.forEach( block => {
+                    const childSec = {...sec, ...block};
+                    sectionList.push(childSec);
+                });
+            });
+            let questionList = [];
+            for (const section of sectionList) {
+                const sizeOfSample = section.questionNumberTo - section.questionNumberFrom + 1;
+                const filter = {
+                    "chapter.course": { $elemMatch: {$eq: course} },
+                    "chapter.subject": section.subject,
+                    "answer": { '$ne': 'bonus' },
+                };
+                if (!section.chapters.includes('All')) {
+                    filter["chapter.chapter"] = {$in: section.chapters};
+                }
+                if (!section.topics.includes('All')) {
+                    filter["chapter.topic"] = {$in: section.topics};
+                }
+                if (section.type === 0) {
+                    filter.question = { $regex: /inputbox/, $options: 'i' };
+                } else if(section.type !== 0) {
+                    filter.noOfAnswers = section.type;
+                }
+                const questions = await Question.aggregate([{ $match: filter}, {$sample: {size: sizeOfSample}}]).exec();
+                questionList = [...questionList, ...questions];
+            }
+            return {
+                status: 1,
+                data: questionList
+            };
+        } catch (err) {
+            return {status: 0, err};
+        }
+    }
+
     static async getRandomQuestions(limit,subject) {
         try {
             let query = {};
@@ -88,6 +129,7 @@ export class QuestionService {
             };
             let {data: savedQuestion} = await QuestionService.getQuestion(criteria);
             if (!savedQuestion) {
+                question.noOfAnswers = question.answer.split(',').length,
                 question = new Question(
                     question
                 );
@@ -107,6 +149,7 @@ export class QuestionService {
                     answerDescription : question.answerDescription,
                     isSingleAnswer : question.isSingleAnswer,
                     imagePath : question.imagePath,
+                    noOfAnswers: question.answer.split(',').length,
                     tags: tags,
                 }, {new: true});
             }

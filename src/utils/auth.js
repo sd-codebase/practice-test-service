@@ -39,7 +39,12 @@ export const handleAuth = app => {
             if (sessionID) {
                 let userData = verifyJWTToken(sessionID);
                 if (userData) {
-                    const user = await UserService.getUserByDetails({email:userData.email, password: userData.password, _id: userData._id});
+                    let user;
+                    if (userData.userType === 'Guest') {
+                        user = await UserService.getGuestUserByDetails({email:userData.email, _id: userData._id});
+                    } else {
+                        user = await UserService.getUserByDetails({email:userData.email, password: userData.password, _id: userData._id});
+                    }
                     if(user.status !== 1) {
                         res.status(401).send({
                             error: {

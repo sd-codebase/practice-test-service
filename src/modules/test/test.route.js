@@ -11,6 +11,7 @@ TestRoutes.get('/:testId', Test.getTest);
 TestRoutes.delete('/:testId', Test.deleteTest);
 TestRoutes.post('/', Test.createTest);
 TestRoutes.post('/create-predefined-test', Test.uploadPredefinedTest);
+TestRoutes.post('/create-mock-test', Test.createMockTest);
 TestRoutes.put('/', Test.updateTest);
 
 export { TestRoutes };

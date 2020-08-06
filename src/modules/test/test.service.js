@@ -1,5 +1,6 @@
 import { TestModel as Test} from './test.model';
 import { QuestionService } from '../question/question.service';
+import { MockTestService } from '../mock-test/mock-test.service';
 
 export class TestService {
     static async getTest(testId) {
@@ -9,8 +10,23 @@ export class TestService {
                 test = test.toJSON();
                 let res = await QuestionService.getQuestionsByIdIn(test.questionIds);
                 let questions = res.data.map( question => question.toJSON());
-                questions.forEach(question => {question.id=question._id});
+                questions.forEach(question => {
+                    question.id=question._id;
+                });
                 test.questions = questions;
+            } else if (test.status === 0) {
+                test = test.toJSON();
+                test.questions.forEach(que => {
+                    delete que.answer;
+                    delete que.level;
+                    delete que.createdAt;
+                    delete que.answerDescription;
+                    delete que.chapter;
+                    delete que.verifiedBy;
+                    delete que.isVerified;
+                    delete que.noOfAnswers;
+                    delete que.tags;
+                });
             }
             return {
                 status: 1,
@@ -115,30 +131,117 @@ export class TestService {
         }
     }
 
-    static async createTest({userId, questionCount, subject}) {
+    static getQuestionNumbersListOfSection(section) {
+        const list = [];
+        section.blocks.forEach( block => {
+            let from = Number(block.questionNumberFrom);
+            let to = Number(block.questionNumberTo);
+            while(from <= to) {
+                list.push(from);
+                from++;
+            }
+        })
+        return list;
+    }
+
+    static getAllottedTime(testConfig) {
+        let timeInMinutes = 0;
+        testConfig.sections.forEach( sec => {
+            timeInMinutes = timeInMinutes + (Number(sec.minutesToEachQuestion) * TestService.getQuestionNumbersListOfSection(sec).length);
+        });
+        return timeInMinutes * 60;
+    }
+
+    // Create Mock Test
+    static async createMockTest({userId, testCriteria}) {
         try{
-            let {data:questions} = await QuestionService.getRandomQuestions(questionCount, subject);
-            questions = questions.map( question => {
-                question = question.toJSON();
+            let {data: testConfig} = await MockTestService.getMockTestById(testCriteria.testConfigId);
+            testConfig = testConfig.toJSON();
+            if(testConfig.type != 0) {
+                throw {message: "No configuration found"};
+            }
+            return await TestService.createTestUsingConfig(userId, testConfig);
+        } catch(err) {
+            return {
+                status: 0,
+                err
+            }
+        }
+    }
+
+    static async createTestUsingConfig(userId, testConfig) {
+        try{
+            let {data: questions} = await QuestionService.getQuestionsBySectionCriteria(testConfig.sections, testConfig.course);
+            questions = questions.map( (question, index) => {
+                //question = question.toJSON();
+                question.sortOrder = index+1;
                 question.id = question._id;
                 return question;
             });
+            const instructions = {};
+            testConfig.sections.forEach( section => {
+                instructions[section.sectionName] = {
+                    questions: TestService.getQuestionNumbersListOfSection(section),
+                    instruction: section.instructions
+                };
+            });
             const test = new Test({
                 userId,
+                testConfigId: testConfig._id,
                 questions,
-                chapter: questions[0].chapter,
-                questionCount: questions.length,
-                testName: subject
+                questionCount: testConfig.noOfQuestions,
+                testName: testConfig.paperName,
+                instructions: instructions,
+                allottedTime: TestService.getAllottedTime(testConfig),
             });
-            test.allottedTime = questions.length * 120;
             let testDoc = await test.save();
             testDoc = testDoc.toJSON();
-            testDoc.questions.forEach( que => delete que.answer);
+            testDoc.questions.forEach( que => {
+                delete que.answer;
+                delete que.level;
+                delete que.createdAt;
+                delete que.answerDescription;
+                delete que.chapter;
+                delete que.verifiedBy;
+                delete que.isVerified;
+                delete que.noOfAnswers;
+                delete que.tags;
+            });
             return {
                 status: 1,
                 data: testDoc
             };
-        } catch(err){
+        } catch(err) {
+            return {
+                status: 0,
+                err
+            }
+        }
+    }
+
+    static async createTest({userId, testCriteria}) {
+        try{
+            let {data: testConfig} = await MockTestService.getMockTestByQuery({course: testCriteria.course, type: testCriteria.type});
+            testConfig = testConfig.toJSON();
+            switch(testConfig.type) {
+                case 1:
+                    testConfig.sections[0].subject = testCriteria.subject;
+                    testConfig.testName = testCriteria.subject;
+                    break;
+                case 2:
+                    testConfig.sections[0].subject = testCriteria.subject;
+                    testConfig.sections[0].blocks[0].chapters = [testCriteria.chapter];
+                    testConfig.testName = testCriteria.chapter;
+                    break;
+                case 3:
+                    testConfig.sections[0].subject = testCriteria.subject;
+                    testConfig.sections[0].blocks[0].chapters = [testCriteria.chapter];
+                    testConfig.sections[0].blocks[0].topics = [testCriteria.topic];
+                    testConfig.testName = testCriteria.topic;
+                    break;    
+            }
+            return await TestService.createTestUsingConfig(userId, testConfig);
+        } catch(err) {
             return {
                 status: 0,
                 err
@@ -162,7 +265,6 @@ export class TestService {
                 err
             }
         }
-
     }
 
     static async updateCorrectAnswer(test) {

@@ -16,6 +16,29 @@ export class UserService {
             };
         }
     }
+    
+    static async getGuestUserByDetails(user) {
+        try {
+            const userDetails = await GuestUser.findOne(user).exec();
+            if(userDetails) {
+                return {
+                    status: 1,
+                    data: userDetails
+                };
+            } else {
+                return {
+                    status: 0,
+                    err: 'No user exists'
+                };
+            }
+            
+        } catch (err){
+            return {
+                status: 0,
+                err
+            };
+        }
+    }
 
     static async getUserByDetails(user) {
         try {
@@ -68,12 +91,34 @@ export class UserService {
             if (savedUser) {
                 return {
                     status: 1,
-                    data: { savedUser, token: generateJWTToken({_id: savedUser._id, email: savedUser.email, password: savedUser.password})}
+                    data: { savedUser, token: generateJWTToken({_id: savedUser._id, email: savedUser.email, password: savedUser.password, userType: 'User'})}
                 };
             } else {
                 return {
                     status: 0,
-                    err
+                    err: {message: "No user exists"}
+                };
+            }
+        } catch (err){
+            return {
+                status: 0,
+                err
+            };
+        }
+    }
+
+    static async authenticateGuestUser(user) {
+        try {
+            let savedUser = await GuestUser.findOne({'email': user.email}).exec();
+            if (savedUser) {
+                return {
+                    status: 1,
+                    data: { savedUser, token: generateJWTToken({_id: savedUser._id, email: savedUser.email, userType: 'Guest'})}
+                };
+            } else {
+                return {
+                    status: 0,
+                    err: {message: "No user exists"}
                 };
             }
         } catch (err){
