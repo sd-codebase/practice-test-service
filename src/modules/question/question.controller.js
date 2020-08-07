@@ -47,4 +47,27 @@ async function updateAndVerifyQuestion(req, res, next) {
     res.send(data);
 }
 
-export { getQuestion, getQuestions, createQuestion, uploadQuestions, getAnswer, verifyQuestion, getMatchingQuestion, updateAndVerifyQuestion };
+async function createInformationPara (req, res, next) {
+    const {status, data, err} = await QuestionService.createInformationPara(req.body);
+    if(status === 0) return next(err);
+    res.send(data);
+};
+
+async function updateInformationPara (req, res, next) {
+    const {status, data, err} = await QuestionService.updateInformationPara(req.body);
+    if(status === 0) return next(err);
+    res.send(data);
+};
+
+export async function getInformationParas (req, res, next) {
+    const {status, data, err} = await QuestionService.getParaInfos();
+    if(status === 0) return next(err);
+    res.send(data);
+};
+
+export { 
+    getQuestion, getQuestions, createQuestion,
+    uploadQuestions, getAnswer, verifyQuestion,
+    getMatchingQuestion, updateAndVerifyQuestion,
+    createInformationPara, updateInformationPara
+};

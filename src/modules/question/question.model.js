@@ -19,6 +19,7 @@ let QuestionSchema = new Schema({
     isVerified: {type: Boolean},
     imagePath: {type: String},
     createdAt: {type: Date, default: Date.now()},
+    infoPara: {type: Number},
     sortOrder: {type: Number},
 });
 
@@ -41,10 +42,20 @@ let SubQuestionSchema = new Schema({
     isVerified: {type: Boolean},
     imagePath: {type: String},
     createdAt: {type: Date, default: Date.now()},
+    infoPara: {type: Number},
     sortOrder: {type: Number},
 },{ _id : false });
 
+let InfoParagraphSchema = new Schema({
+    paraId : { type:  Number, unique: true},
+    content: { type: String},
+    createdBy: { type: String},
+    updatedBy: { type: String},
+    tags: {type: String},
+});
+
 
 const QuestionModel = mongoose.model('Question', QuestionSchema);
+const InfoParaModel = mongoose.model('InformationParagraph', InfoParagraphSchema);
 
-export { QuestionModel, SubQuestionSchema };
+export { QuestionModel, SubQuestionSchema, InfoParaModel };

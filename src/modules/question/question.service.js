@@ -1,4 +1,4 @@
-import { QuestionModel as Question} from './question.model';
+import { QuestionModel as Question, InfoParaModel as Para} from './question.model';
 
 export class QuestionService {
     static async getQuestionById(questionId) {
@@ -155,7 +155,6 @@ export class QuestionService {
             }
             return {status: 1, data: question};
         } catch(err){
-            console.log(err)
             return {status: 0, err};
         }
     }
@@ -173,6 +172,44 @@ export class QuestionService {
             let {data: question} = await QuestionService.getQuestionById(questionId);
             let que = question.toJSON();
             return {status: 1, data: {answer: que.answer, answerDescription: que.answerDescription}};
+        } catch(err){
+            return {status: 0, err};
+        }
+    }
+
+    static async createInformationPara(para) {
+        try {
+            let infoParas = await Para.find({}).sort({paraId : -1}).limit(1).exec();
+            if(infoParas && infoParas.length) {
+                para.paraId = infoParas[0].paraId + 1;
+            } else {
+                para.paraId = 1;
+            }
+            para = new Para(para);
+            const data = await para.save();
+            return {status: 1, data};
+        } catch(err){
+            return {status: 0, err};
+        }
+    }
+
+    static async updateInformationPara(para) {
+        try {
+            const updated = await Para.updateOne({'_id': para._id}, {
+                content: para.content,
+                tags: para.tags,
+                updatedBy: para.updatedBy
+            }).exec();
+            return {status: 1, data: updated};
+        } catch(err){
+            return {status: 0, err};
+        }
+    }
+
+    static async getParaInfos() {
+        try {
+            const paras = await Para.find({}).exec();
+            return {status: 1, data: paras};
         } catch(err){
             return {status: 0, err};
         }

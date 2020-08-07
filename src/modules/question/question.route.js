@@ -4,6 +4,10 @@ import * as Question from './question.controller';
 const QuestionRoutes = express.Router();
 
 
+QuestionRoutes.post('/add-info-para', Question.createInformationPara);
+QuestionRoutes.post('/update-info-para', Question.updateInformationPara);
+QuestionRoutes.get('/info-para', Question.getInformationParas);
+
 QuestionRoutes.get('/', Question.getQuestions);
 QuestionRoutes.get('/:questionId', Question.getQuestion);
 QuestionRoutes.get('/answer/:questionId', Question.getAnswer);
