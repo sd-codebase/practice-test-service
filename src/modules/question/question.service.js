@@ -89,7 +89,18 @@ export class QuestionService {
                 }
                 if (section.type === 0) {
                     filter.question = { $regex: /inputbox/, $options: 'i' };
-                } else if(section.type !== 0) {
+                } else if(section.type === 5) {
+                    const groupBy = {
+                        $group: {
+                            _id: "$infoPara",
+                            count: { $sum: 1 }
+                        }
+                    };
+                    const paraIds = await Question.aggregate([{ $match: filter}, groupBy]).exec();
+                    let paras = paraIds.filter( para => para.count >= sizeOfSample);
+                    const item = paras[Math.floor(Math.random() * paras.length)];
+                    filter.infoPara = item._id;
+                } else if(section.type !== 1 && section.type !== 5) {
                     filter.noOfAnswers = section.type;
                 }
                 const questions = await Question.aggregate([{ $match: filter}, {$sample: {size: sizeOfSample}}]).exec();

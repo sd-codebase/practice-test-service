@@ -28,7 +28,7 @@ let MockTestSectionSchema = new Schema({
 let MockTestSectionBlockSchema = new Schema({
     questionNumberFrom: {type: Number},
     questionNumberTo: {type: Number},
-    type: {type: Number}, //0-integer-input, 1-one option, 2-two, 3-three, 4-four
+    type: {type: Number}, //0-integer-input, 1-one option, 2-two, 3-three, 4-four, 5-para
     chapters: {type: [String]},
     topics: {type: [String]},
 },{_id : false});
