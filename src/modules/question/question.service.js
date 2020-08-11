@@ -97,10 +97,11 @@ export class QuestionService {
                         }
                     };
                     const paraIds = await Question.aggregate([{ $match: filter}, groupBy]).exec();
-                    let paras = paraIds.filter( para => para.count >= sizeOfSample);
+                    let paras = paraIds.filter( para => para.count >= sizeOfSample && para._id);
                     const item = paras[Math.floor(Math.random() * paras.length)];
                     filter.infoPara = item._id;
-                } else if(section.type !== 1 && section.type !== 5) {
+                } else if(section.type !== 0 && section.type !== 5) {
+                    filter.infoPara = null;
                     filter.noOfAnswers = section.type;
                 }
                 const questions = await Question.aggregate([{ $match: filter}, {$sample: {size: sizeOfSample}}]).exec();
@@ -162,6 +163,7 @@ export class QuestionService {
                     imagePath : question.imagePath,
                     noOfAnswers: question.answer.split(',').length,
                     tags: tags,
+                    infoPara: infoPara,
                 }, {new: true});
             }
             return {status: 1, data: question};
@@ -217,9 +219,9 @@ export class QuestionService {
         }
     }
 
-    static async getParaInfos() {
+    static async getParaInfos(query={}) {
         try {
-            const paras = await Para.find({}).exec();
+            const paras = await Para.find(query).exec();
             return {status: 1, data: paras};
         } catch(err){
             return {status: 0, err};

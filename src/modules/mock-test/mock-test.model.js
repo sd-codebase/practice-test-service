@@ -5,6 +5,7 @@ let MockTestSchema = new Schema({
     course: {type: String},
     type: {type: Number, default: 0},
     noOfQuestions: {type: Number},
+    totalMarks: {type: Number},
     isNegativeMarking: {type: Boolean, default: true},
     isSectionwisePassing: {type: Boolean, default: false},
     passingPercentage: {type: Number},

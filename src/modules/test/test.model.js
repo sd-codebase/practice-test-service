@@ -15,12 +15,24 @@ let TestSchema = new Schema({
     isSubmitted: {type:Boolean, default: false},
     questions: {type:[SubQuestionSchema]}, // questions=>!isPredefined or questionIds=>isPredefined
     questionIds: {type:[String]},
+    requiredPercentage: {type: Number},
     percentage: {type:Number, default:0},
     createdAt: {type: Date, default: Date.now()},
     updatedAt: {type: Date, default: Date.now()},
     isPredefined: {type:Boolean, default:false},
     testName:{type:String},
     instructions:{type: Schema.Types.Mixed},
+    hasParagraph: {type: Boolean},
+    paragraphs: {type: [Number]},
+    sectionWisePercentage: {type: [SectionWisePercentageSchema]},
+    result: {type: Boolean},
+    totalMarks: {type: Number},
+});
+
+let SectionWisePercentageSchema = new Schema({
+    section: {type: String},
+    percentage: {type: Number},
+    requiredPercentage: {type: Number},
 });
 
 

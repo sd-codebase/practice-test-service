@@ -1,13 +1,14 @@
 import { TestModel as Test} from './test.model';
 import { QuestionService } from '../question/question.service';
 import { MockTestService } from '../mock-test/mock-test.service';
+import { isEqual } from 'lodash';
 
 export class TestService {
     static async getTest(testId) {
         try {
             let test = await Test.findOne({'_id': testId}).exec();
+            test = test.toJSON();
             if(test && test.isPredefined){
-                test = test.toJSON();
                 let res = await QuestionService.getQuestionsByIdIn(test.questionIds);
                 let questions = res.data.map( question => question.toJSON());
                 questions.forEach(question => {
@@ -15,18 +16,20 @@ export class TestService {
                 });
                 test.questions = questions;
             } else if (test.status === 0) {
-                test = test.toJSON();
                 test.questions.forEach(que => {
                     delete que.answer;
                     delete que.level;
                     delete que.createdAt;
                     delete que.answerDescription;
-                    delete que.chapter;
                     delete que.verifiedBy;
                     delete que.isVerified;
                     delete que.noOfAnswers;
                     delete que.tags;
                 });
+            }
+            if(test.hasParagraph) {
+                const paras = await QuestionService.getParaInfos({paraId: {$in: test.paragraphs}});
+                test.paraObject = paras.data;
             }
             return {
                 status: 1,
@@ -95,6 +98,7 @@ export class TestService {
                 uploadResult.push(await QuestionService.createQuestion(questions[i], userId));
             }
             let questionIds = uploadResult.map(res => res.data._id);
+            let paragraphs = [...new Set(uploadResult.map(res => res.data.infoPara))].filter( infoPara => infoPara);
             
             if(!test) {
                 const test = new Test({
@@ -103,7 +107,9 @@ export class TestService {
                     testName: testmeta.name,
                     isPredefined: true,
                     status: 2,
-                    isSubmitted: true
+                    isSubmitted: true,
+                    paragraphs,
+                    hasParagraph: paragraphs > 0,
                 });
                 let testDoc = await test.save();
                 testDoc = testDoc.toJSON();
@@ -155,6 +161,10 @@ export class TestService {
     // Create Mock Test
     static async createMockTest({userId, testCriteria}) {
         try{
+            const myTests = await Test.countDocuments({status: 0, userId: userId}).exec();
+            if(myTests >= 5) {
+                throw {message: "5 or more tests are in progress, please complet or delete them."};
+            }
             let {data: testConfig} = await MockTestService.getMockTestById(testCriteria.testConfigId);
             testConfig = testConfig.toJSON();
             if(testConfig.type != 0) {
@@ -172,12 +182,19 @@ export class TestService {
     static async createTestUsingConfig(userId, testConfig) {
         try{
             let {data: questions} = await QuestionService.getQuestionsBySectionCriteria(testConfig.sections, testConfig.course);
+            let paragraphs = [];
             questions = questions.map( (question, index) => {
                 //question = question.toJSON();
                 question.sortOrder = index+1;
                 question.id = question._id;
+                if(question.infoPara) {
+                    paragraphs.push(question.infoPara);
+                }
                 return question;
             });
+            if(paragraphs.length) {
+                paragraphs = [...new Set(paragraphs)];
+            }
             const instructions = {};
             testConfig.sections.forEach( section => {
                 instructions[section.sectionName] = {
@@ -193,6 +210,9 @@ export class TestService {
                 testName: testConfig.paperName,
                 instructions: instructions,
                 allottedTime: TestService.getAllottedTime(testConfig),
+                paragraphs,
+                hasParagraph: paragraphs.length,
+                totalMarks: testConfig.totalMarks,
             });
             let testDoc = await test.save();
             testDoc = testDoc.toJSON();
@@ -201,12 +221,15 @@ export class TestService {
                 delete que.level;
                 delete que.createdAt;
                 delete que.answerDescription;
-                delete que.chapter;
                 delete que.verifiedBy;
                 delete que.isVerified;
                 delete que.noOfAnswers;
                 delete que.tags;
             });
+            if(testDoc.hasParagraph) {
+                const paras = await QuestionService.getParaInfos({paraId: {$in: testDoc.paragraphs}});
+                testDoc.paraObject = paras.data;
+            }
             return {
                 status: 1,
                 data: testDoc
@@ -221,6 +244,10 @@ export class TestService {
 
     static async createTest({userId, testCriteria}) {
         try{
+            const myTests = await Test.countDocuments({status: 0, userId: userId}).exec();
+            if(myTests >= 5) {
+                throw {message: "5 or more tests are in progress, please complet or delete them."};
+            }
             let {data: testConfig} = await MockTestService.getMockTestByQuery({course: testCriteria.course, type: testCriteria.type});
             testConfig = testConfig.toJSON();
             switch(testConfig.type) {
@@ -268,32 +295,134 @@ export class TestService {
     }
 
     static async updateCorrectAnswer(test) {
-        const {data: testFromDb} = await TestService.getTest(test._id);
-        test.questions.forEach( (subittedQuestion, i) => {
-            const que = testFromDb.questions[i];
-            subittedQuestion.isCorrectAnswer = TestService.isCorrectAnswer(subittedQuestion, que);
+        let {data: testConfig} = await MockTestService.getMockTestById(test.testConfigId);
+        const sectionList = [];
+        testConfig.sections.forEach( section => {
+            const sec = {...section};
+            sec.blocks.forEach( block => {
+                const childSec = {...sec, ...block};
+                sectionList.push(childSec);
+            });
         });
-        test.correctCount = test.questions.filter( que => que.isCorrectAnswer).length;
-        test.percentage = test.correctCount / test.questionCount * 100;
+
+        for(let section of sectionList) {
+            const queNums = [];
+            let from = Number(section.questionNumberFrom);
+            let to = Number(section.questionNumberTo);
+            while(from <= to) {
+                queNums.push(from);
+                from++;
+            }
+            for(let queNum of queNums) {
+                const question = test.questions.find( que => que.sortOrder === queNum);
+                const {data: questionFromDb} = await QuestionService.getQuestionById(question.id);
+                if(question.isSubmitted) {
+                    TestService.calculateAnswers(testConfig.isNegativeMarking,section, question, questionFromDb);
+                } else {
+                    // necessary updates if needed
+                }
+                question.answer = questionFromDb.answer;
+                question.answerDescription = questionFromDb.answerDescription;
+            }
+        }
+        
+        test.correctCount = test.questions.filter( que => que.isCorrectAnswer === CorrectAnswerType.CORRECT || que.isCorrectAnswer === CorrectAnswerType.PARTIAL ).length;
+        test.result = TestResult.PASS;
+        if(testConfig.isSectionwisePassing) {
+            test.sectionWisePercentage = [];
+            testConfig.sections.forEach( section => {
+                const questionNums = TestService.getQuestionNumbersListOfSection(section);
+                const positiveMarks = test.questions.filter( que => questionNums.includes(que.sortOrder)).reduce( (sum, que) => sum + (que.obtainedMarks ? Number(que.obtainedMarks) : 0), 0 );
+                const negativeMarks = test.questions.filter( que => questionNums.includes(que.sortOrder)).reduce( (sum, que) => sum + (que.negativeMarks ? Number(que.negativeMarks) : 0), 0 );
+                const totalObtained = positiveMarks - negativeMarks;
+                const total = questionNums.length * section.marksToEachQuestion;
+                const sectionPercent = Number((totalObtained / total * 100).toFixed(2));
+                const sectionWisePercentage = {
+                    section : section.sectionName,
+                    percentage: sectionPercent,
+                    requiredPercentage: section.passingPercentage
+                }
+                test.sectionWisePercentage.push(sectionWisePercentage);
+                if (sectionPercent < section.passingPercentage) {
+                    test.result = TestResult.FAIL;
+                }
+            });
+        } else {
+            const positiveMarks = test.questions.reduce( (sum, que) => sum + (que.obtainedMarks ? Number(que.obtainedMarks) : 0), 0 );
+            const negativeMarks = test.questions.reduce( (sum, que) => sum + (que.negativeMarks ? Number(que.negativeMarks) : 0), 0 );
+            const totalObtained = positiveMarks - negativeMarks;
+            test.requiredPercentage = testConfig.passingPercentage;
+            test.percentage = Number((totalObtained / testConfig.totalMarks * 100).toFixed(2));
+            if (test.percentage < testConfig.passingPercentage) {
+                test.result = TestResult.FAIL;
+            }
+        }
         return null;
     }
 
-    static isCorrectAnswer(subittedQuestion, que) {
-        let returnValue = false;
-        if(!subittedQuestion.isSubmitted){
-            return returnValue;
-        } else if(subittedQuestion.question.statement.includes('*inputbox*')) {
-            return subittedQuestion.userAnswer && que.answer.toString() == subittedQuestion.userAnswer.toString();
-        } else if(que.isSingleAnswer){
-            return que.answer.toString() === subittedQuestion.userAnswer.toString();
+    static calculateAnswers(isNegativeMarking, section, question, questionFromDb) {
+        switch(section.type) {
+            case 0:
+                TestService.calculateAnswersOfNumericAndOneOption(isNegativeMarking, section, question, questionFromDb);
+                break;
+            case 1:
+                TestService.calculateAnswersOfNumericAndOneOption(isNegativeMarking, section, question, questionFromDb);
+                break;
+            default:
+                TestService.calculateAnswersOfTwoOrMoreOptions(isNegativeMarking, section, question, questionFromDb);
+                break;
+        }
+    }
+
+    static calculateAnswersOfNumericAndOneOption(isNegativeMarking, section, question, questionFromDb) {
+        if(question.userAnswer === questionFromDb.answer) {
+            question.isCorrectAnswer = CorrectAnswerType.CORRECT;
+            question.obtainedMarks = section.marksToEachQuestion;
+            question.negativeMarks = 0;
         } else {
-            let [answer, userAnswer] = [que.answer, subittedQuestion.userAnswer];
-            answer = answer.split(',');
-            if (userAnswer && answer && userAnswer.length === answer.length) {
-                return answer.every( opNum => userAnswer.includes(opNum) );
-            } else{
-                return false;
+            question.isCorrectAnswer = CorrectAnswerType.WRONG;
+            question.obtainedMarks = 0;
+            question.negativeMarks = isNegativeMarking? section.negativeMarksToEachQuestion : 0;
+        }
+    }
+
+    static calculateAnswersOfTwoOrMoreOptions(isNegativeMarking, section, question, questionFromDb) {
+        const [userAnswer, answers] = [question.userAnswer.split(','), questionFromDb.answer.split(',')];
+        const correctUserAnswer = userAnswer.filter(ans => answers.includes(ans));
+        if(isEqual(userAnswer, answers)) {
+            question.isCorrectAnswer = CorrectAnswerType.CORRECT;
+            question.obtainedMarks = section.marksToEachQuestion;
+            question.negativeMarks = 0;
+        } else {
+            if(section.isOptionwiseNegativeMarking) {
+                let correctOptions = 0;
+                let wrongOptions = 0;
+                userAnswer.forEach( answer => {
+                    if(answers.includes(answer)) {
+                        correctOptions += 1;
+                    } else {
+                        wrongOptions += 1;
+                    }
+                });
+                question.isCorrectAnswer = correctOptions ? CorrectAnswerType.PARTIAL : CorrectAnswerType.WRONG;
+                question.obtainedMarks = correctUserAnswer.length;
+                question.negativeMarks = isNegativeMarking ? wrongOptions : 0;
+            } else {
+                question.isCorrectAnswer = CorrectAnswerType.WRONG;
+                question.obtainedMarks = 0;
+                question.negativeMarks = isNegativeMarking ? section.negativeMarksToEachQuestion : 0;
             }
         }
     }
 }
+
+export const CorrectAnswerType = {
+    CORRECT: 1,
+    WRONG: 0,
+    PARTIAL: 2,
+};
+
+export const TestResult = {
+    PASS: 1,
+    FAIL: 0,
+};

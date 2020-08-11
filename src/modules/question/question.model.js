@@ -8,10 +8,7 @@ let QuestionSchema = new Schema({
     answer: {type: Schema.Types.Mixed, required: true},
     isSingleAnswer: {type: Boolean},
     noOfAnswers: {type: Number},
-    isSubmitted: {type: Boolean},
-    userAnswer: {type: Schema.Types.Mixed},
     answerDescription: {type: String},
-    isCorrectAnswer:{type:Boolean},
     tags: {type:String},
     level: {type:Number, default:2}, //1-pro, 2-advanced, 3-mid, 4-basic
     createdBy: {type: String},
@@ -34,16 +31,13 @@ let SubQuestionSchema = new Schema({
     isSubmitted: {type: Boolean},
     userAnswer: {type: Schema.Types.Mixed},
     answerDescription: {type: String},
-    isCorrectAnswer:{type:Boolean},
+    isCorrectAnswer:{type:Number}, // 0-false, 1-true, 2-partial
     tags: {type:String},
-    level: {type:Number, default:2}, //1-pro, 2-advanced, 3-mid, 4-basic
-    createdBy: {type: String},
-    verifiedBy: {type: String},
-    isVerified: {type: Boolean},
     imagePath: {type: String},
-    createdAt: {type: Date, default: Date.now()},
     infoPara: {type: Number},
     sortOrder: {type: Number},
+    obtainedMarks: {type: Number},
+    negativeMarks: {type: Number},
 },{ _id : false });
 
 let InfoParagraphSchema = new Schema({
