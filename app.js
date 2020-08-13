@@ -2,13 +2,11 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import { enableRoutes } from './src/routes';
 import mongoose from 'mongoose';
-import { MONGO_URI, ENV } from './config';
+import { MONGO_URI } from './config';
 import { handleAuth } from './src/utils/auth';
 
 // initialize our express app
 const app = express();
-
-const environment = process.env.ENV || ENV;
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");

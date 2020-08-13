@@ -1,4 +1,5 @@
 import { QuestionModel } from '../question/question.model';
+import { COURSES } from '../test/test.model';
 
 export class ScriptService {
     static async updateNoOfAnswers() {
@@ -27,10 +28,11 @@ export class ScriptService {
             for (const question of questions) {
                 let courses = [];
                 if (JEESubjects.includes(question.chapter.subject)) {
-                    courses = ['JEE Mains', 'JEE Advanced I', 'JEE Advanced II'];
+
+                    courses = [COURSES.JEE_MAINS, COURSES.JEE_ADV_PAPER_1, COURSES.JEE_ADV_PAPER_2];
                 }
                 if (NEETSubjects.includes(question.chapter.subject)) {
-                    courses.push('NEET');
+                    courses.push(COURSES.NEET);
                 }
                 const result = await QuestionModel.updateOne({'_id': question._id}, {$set:{ 'chapter.course': courses}}).exec();
                 results.push(result);

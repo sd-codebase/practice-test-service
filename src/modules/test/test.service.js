@@ -1,16 +1,28 @@
-import { TestModel as Test} from './test.model';
+import { TestModel as Test, GuestTestModel as GuestTest} from './test.model';
 import { QuestionService } from '../question/question.service';
 import { MockTestService } from '../mock-test/mock-test.service';
+import { UserService } from '../user/user.service';
 import { isEqual } from 'lodash';
 
 export class TestService {
-    static async getTest(testId) {
+    static async getTest(testId, queryObject) {
         try {
-            let test = await Test.findOne({'_id': testId}).exec();
+            let test;
+            if(queryObject && queryObject.isGuest) {
+                test = await GuestTest.findOne({'_id': testId}).exec();
+            } else {
+                test = await Test.findOne({'_id': testId}).exec();
+            }
+            if (!test) {
+                throw {message: 'No test found'};
+            }
             test = test.toJSON();
             if(test && test.isPredefined){
                 let res = await QuestionService.getQuestionsByIdIn(test.questionIds);
                 let questions = res.data.map( question => question.toJSON());
+                questions.sort((x, y) => {
+                    return x.createdAt - y.createdAt;
+                });
                 questions.forEach(question => {
                     question.id=question._id;
                 });
@@ -45,7 +57,13 @@ export class TestService {
 
     static async getTests(query) {
         try {
-            let tests = await Test.find(query).exec();
+            let tests;
+            if (query.isGuest) {
+                delete query.isGuest;
+                tests = await GuestTest.find(query).exec();
+            } else {
+                tests = await Test.find(query).exec();
+            }
             return {
                 status: 1,
                 data: tests
@@ -58,9 +76,10 @@ export class TestService {
         }
     }
     
-    static async getPredefinedTests() {
+    static async getPredefinedTests(userId) {
         try {
-            let tests = await Test.find({'isPredefined': true}).exec();
+            let {data: user} = await UserService.getUser(userId);
+            let tests = await Test.find({'isPredefined': true, courses: {$in : user.courses}}).exec();
             return {
                 status: 1,
                 data: tests
@@ -77,6 +96,7 @@ export class TestService {
     static async deleteTest(testId) {
         try {
             let tests = await Test.deleteOne({'_id': testId}).exec();
+            GuestTest.deleteMany({'mappedTestId': testId}).exec();
             return {
                 status: 1,
                 data: tests
@@ -89,14 +109,16 @@ export class TestService {
         }
     }
 
-    static async uploadPredefinedTest({testmeta, questions, userId}) {
+    static async uploadPredefinedTest({testmeta, questions, userId, courses}) {
         try{
             let test = await Test.findOne({'testName': testmeta.name}).exec();
             const uploadResult = [];
             for(let i=0; i<questions.length; i++) {
                 questions[i].sortOrder = i;
-                uploadResult.push(await QuestionService.createQuestion(questions[i], userId));
+                const que = await QuestionService.createQuestion(questions[i], userId);
+                uploadResult.push(que);
             }
+
             let questionIds = uploadResult.map(res => res.data._id);
             let paragraphs = [...new Set(uploadResult.map(res => res.data.infoPara))].filter( infoPara => infoPara);
             
@@ -110,6 +132,7 @@ export class TestService {
                     isSubmitted: true,
                     paragraphs,
                     hasParagraph: paragraphs > 0,
+                    courses
                 });
                 let testDoc = await test.save();
                 testDoc = testDoc.toJSON();
@@ -211,7 +234,7 @@ export class TestService {
                 instructions: instructions,
                 allottedTime: TestService.getAllottedTime(testConfig),
                 paragraphs,
-                hasParagraph: paragraphs.length,
+                hasParagraph: paragraphs.length ? true : false,
                 totalMarks: testConfig.totalMarks,
             });
             let testDoc = await test.save();
@@ -276,15 +299,56 @@ export class TestService {
         }
     }
 
-    static async updateTest(test) {
+    static async updateTestUsers(test) {
+        try{
+            await Test.updateOne({'_id': test._id}, {$set:{users: test.users}}).exec();
+            TestService.copyTestToGuestUsers(test._id);
+            return {status: 1, message: "Users updated"};
+        } catch(err){
+            return {
+                status: 0,
+                err
+            }
+        }
+    }
+
+    static async copyTestToGuestUsers(testId) {
+        let test = await Test.findById(testId);
+        test = test.toJSON();
+        const users = test.users;
+        const mappedTestId = test._id;
+        delete test._id;
+        delete test.users;
+        for(const guestUserId of users) {
+            const guestTest = new GuestTest({
+                testName: test.testName
+            });
+            guestTest.createdAt = new Date();
+            guestTest.mappedTestId = mappedTestId;
+            guestTest.guestUserId = guestUserId;
+            const found = await GuestTest.findOne({mappedTestId, guestUserId}).exec();
+            if (!found) {
+                delete test.createdAt;
+                test.updatedAt = new Date();
+                const savedGuestTest = await guestTest.save();
+                await GuestTest.updateOne({'_id': savedGuestTest._id}, {$set:test}).exec();
+            }
+        }
+    }
+
+    static async updateTest(test, queryObject) {
         try{
             await TestService.updateCorrectAnswer(test);
             const id = test._id;
             delete test._id;
             test.isSubmitted = true;
             test.updatedAt = Date.now();
-            await Test.updateOne({'_id': id}, {$set:test}).exec();
-            const testRes = await TestService.getTest(id);
+            if(queryObject && queryObject.isGuest) {
+                await GuestTest.updateOne({'_id': id}, {$set:test}).exec();
+            } else {
+                await Test.updateOne({'_id': id}, {$set:test}).exec();
+            }
+            const testRes = await TestService.getTest(id, queryObject);
             return testRes;
         } catch(err){
             return {
@@ -388,7 +452,6 @@ export class TestService {
 
     static calculateAnswersOfTwoOrMoreOptions(isNegativeMarking, section, question, questionFromDb) {
         const [userAnswer, answers] = [question.userAnswer.split(','), questionFromDb.answer.split(',')];
-        const correctUserAnswer = userAnswer.filter(ans => answers.includes(ans));
         if(isEqual(userAnswer, answers)) {
             question.isCorrectAnswer = CorrectAnswerType.CORRECT;
             question.obtainedMarks = section.marksToEachQuestion;
@@ -396,22 +459,30 @@ export class TestService {
         } else {
             if(section.isOptionwiseNegativeMarking) {
                 let correctOptions = 0;
-                let wrongOptions = 0;
                 userAnswer.forEach( answer => {
                     if(answers.includes(answer)) {
                         correctOptions += 1;
-                    } else {
-                        wrongOptions += 1;
                     }
                 });
                 question.isCorrectAnswer = correctOptions ? CorrectAnswerType.PARTIAL : CorrectAnswerType.WRONG;
-                question.obtainedMarks = correctUserAnswer.length;
-                question.negativeMarks = isNegativeMarking ? wrongOptions : 0;
+                question.obtainedMarks = answers.length === correctOptions? section.marksToEachQuestion : TestService.calculateMarksOfMultipleOptions(correctOptions, answers.length);
+                question.negativeMarks = isNegativeMarking ? section.negativeMarksToEachQuestion : 0;
             } else {
                 question.isCorrectAnswer = CorrectAnswerType.WRONG;
                 question.obtainedMarks = 0;
                 question.negativeMarks = isNegativeMarking ? section.negativeMarksToEachQuestion : 0;
             }
+        }
+    }
+
+    static calculateMarksOfMultipleOptions(correctOptions, answersLength) {
+        if(correctOptions === 0) {
+            return 0;
+        }
+        if(answersLength === 2 || correctOptions === 1){
+            return 2;
+        } else if(answersLength === 3){
+            return correctOptions;
         }
     }
 }

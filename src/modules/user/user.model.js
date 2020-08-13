@@ -7,7 +7,7 @@ let UserSchema = new Schema({
     contact: {type: String},
     email_verified: {type: Boolean, default: false},
     role: {type: Number, default: 0},
-    course: {type: String},
+    courses: {type: [String]},
     createdAt: {type: Date, default: Date.now()},
     updatedAt: {type: Date, default: Date.now()}
 });
@@ -17,7 +17,7 @@ let GuestUserSchema = new Schema({
     name: {type: String},
     contact: {type: String},
     belongsTo: {type: String},
-    course: {type: String},
+    courses: {type: [String]},
     createdAt: {type: Date, default: Date.now()},
     updatedAt: {type: Date, default: Date.now()}
 });

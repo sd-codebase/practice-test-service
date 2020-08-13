@@ -11,7 +11,8 @@ let MockTestSchema = new Schema({
     passingPercentage: {type: Number},
     sections: {type: [MockTestSectionSchema]},
     createdAt: {type: Date, default: Date.now()},
-    updatedAt: {type: Date, default: Date.now()}
+    updatedAt: {type: Date, default: Date.now()},
+    createdBy: {type: String},
 });
 
 let MockTestSectionSchema = new Schema({

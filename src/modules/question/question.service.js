@@ -66,6 +66,7 @@ export class QuestionService {
     static async getQuestionsBySectionCriteria(sections, course) {
         try {
             const sectionList = [];
+            const paragraphsList = [];
             sections.forEach( section => {
                 const sec = {...section};
                 sec.blocks.forEach( block => {
@@ -97,8 +98,9 @@ export class QuestionService {
                         }
                     };
                     const paraIds = await Question.aggregate([{ $match: filter}, groupBy]).exec();
-                    let paras = paraIds.filter( para => para.count >= sizeOfSample && para._id);
+                    let paras = paraIds.filter( para => para.count >= sizeOfSample && para._id && !paragraphsList.includes(para._id));
                     const item = paras[Math.floor(Math.random() * paras.length)];
+                    paragraphsList.push(item._id);
                     filter.infoPara = item._id;
                 } else if(section.type !== 0 && section.type !== 5) {
                     filter.infoPara = null;
@@ -129,7 +131,7 @@ export class QuestionService {
         }
     }
 
-    static async createQuestion(question, userToVerify) {
+    static async createQuestion(question, userToVerify, courses=[]) {
         try {
             const criteria = {
                 'question': question.question,
@@ -141,12 +143,13 @@ export class QuestionService {
             };
             let {data: savedQuestion} = await QuestionService.getQuestion(criteria);
             if (!savedQuestion) {
-                question.noOfAnswers = question.answer.split(',').length,
+                question.noOfAnswers = question.answer.toString().split(',').length,
                 question = new Question(
                     question
                 );
                 question.verifiedBy = userToVerify;
                 question.isVerified = false;
+                question.chapter.course = courses;
                 question = await question.save();
             } else {
                 let tags = savedQuestion.tags;
@@ -161,9 +164,9 @@ export class QuestionService {
                     answerDescription : question.answerDescription,
                     isSingleAnswer : question.isSingleAnswer,
                     imagePath : question.imagePath,
-                    noOfAnswers: question.answer.split(',').length,
+                    noOfAnswers: question.answer.toString().split(',').length,
                     tags: tags,
-                    infoPara: infoPara,
+                    infoPara: question.infoPara,
                 }, {new: true});
             }
             return {status: 1, data: question};
@@ -172,10 +175,10 @@ export class QuestionService {
         }
     }
 
-    static async uploadQuestions({questions, userId}){
+    static async uploadQuestions({questions, userId, courses}){
         const uploadResult = [];
         for(let i=0; i<questions.length; i++) {
-            uploadResult.push(await QuestionService.createQuestion(questions[i], userId));
+            uploadResult.push(await QuestionService.createQuestion(questions[i], userId, courses));
         }
         return uploadResult;
     }

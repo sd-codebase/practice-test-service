@@ -6,12 +6,13 @@ const TestRoutes = express.Router();
 
 // a simple test url to check that all of our files are communicating correctly.
 TestRoutes.get('/all', Test.getTests);
-TestRoutes.get('/solved-papers', Test.getPerdefinedTests);
+TestRoutes.get('/solved-papers/:userId', Test.getPerdefinedTests);
 TestRoutes.get('/:testId', Test.getTest);
 TestRoutes.delete('/:testId', Test.deleteTest);
 TestRoutes.post('/', Test.createTest);
 TestRoutes.post('/create-predefined-test', Test.uploadPredefinedTest);
 TestRoutes.post('/create-mock-test', Test.createMockTest);
 TestRoutes.put('/', Test.updateTest);
+TestRoutes.put('/update-users', Test.updateTestUsers);
 
 export { TestRoutes };

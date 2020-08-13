@@ -66,11 +66,11 @@ export class UserService {
     static async saveUser(user) {
         try {
             let savedUser = await User.findOne({'email': user.email}).exec();
-            user = new User(user);
             if (savedUser) {
                 user._id = savedUser._id;
                 await User.updateOne({'_id': savedUser._id}, user).exec();
             } else {
+                user = new User(user);
                 user.save();
             }
             return {
