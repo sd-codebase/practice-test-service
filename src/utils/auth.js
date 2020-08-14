@@ -47,11 +47,13 @@ export const handleAuth = app => {
                     }
                     try {
                         const request = await axios.get(url);
+                        console.log(request.status, reuest.data)
                         if(request.status !== 200) {
                             throw {err:request};
                         }
                         user = request.data;
                     } catch (e) {
+                        console.log("1qwert",e)
                         res.status(401).send({
                             error: {
                                 reason: "Unauthorized Access",
@@ -61,6 +63,7 @@ export const handleAuth = app => {
                         });
                     }
                     if(user.status !== 1) {
+                        console.log("2asddff")
                         res.status(401).send({
                             error: {
                                 reason: "Unauthorized Access",
@@ -70,6 +73,7 @@ export const handleAuth = app => {
                         });
                     }
                 } else {
+                    console.log("3asddff")
                     res.status(401).send({
                         error: {
                             reason: "Unauthorized Access",
@@ -79,6 +83,7 @@ export const handleAuth = app => {
                     });
                 }
             } else {
+                console.log("4asddff")
                 res.status(401).send({
                     error: {
                         reason: "Missing Sessiontoken",
