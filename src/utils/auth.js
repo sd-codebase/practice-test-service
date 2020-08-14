@@ -46,8 +46,8 @@ export const handleAuth = app => {
                     if (userData.userType === 'Guest') {
                         url = `https://test-for-all-services.herokuapp.com/api/users/get-user-for-verification?email=${userData.email}&isGuest=true`;
                     }
-                    user = await axios.get(url);
-                    console.log(user);
+                    const request = await axios.get(url);
+                    user = request.data;
                     if(user.status !== 1) {
                         res.status(401).send({
                             error: {

@@ -12,11 +12,11 @@ async function getUserByDetails (req, res, next) {
     if (queryObject.isGuest) {
         const {status, data, err} = await UserService.getGuestUserByDetails(queryObject);
         if(status === 0) return next(err);
-        res.send(data);
+        res.send({status, data});
     } else {
         const {status, data, err} = await UserService.getUserByDetails(queryObject);
         if(status === 0) return next(err);
-        res.send(data);
+        res.send({status, data});
     }
 };
 
