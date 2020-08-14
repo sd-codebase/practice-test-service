@@ -8,8 +8,7 @@ async function getUser (req, res, next) {
 };
 
 async function getUserByDetails (req, res, next) {
-    const queryObject = url.parse(req.url,true).query;
-    const {status, data, err} = await UserService.verifyToken(queryObject);
+    const {status, data, err} = await UserService.verifyToken(req.body);
     if(status === 0) return next(err);
     res.send({status, data});
 };

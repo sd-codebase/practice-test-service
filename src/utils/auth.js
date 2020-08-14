@@ -25,7 +25,7 @@ export const verifyJWTToken = jwtToken => {
     try{
         return jwt.verify(jwtToken, SECRET_KEY);
      }catch(e){
-        return e;
+        return null;
     }
 }
 
@@ -40,7 +40,7 @@ export const handleAuth = app => {
             if (sessionID) {
                 let url = `https://test-for-all-services.herokuapp.com/api/users/get-user-for-verification?sessionID=${sessionID}`;
                 try {
-                    const request = await axios.get(url);
+                    const request = await axios.post(url,{sessionID});
                     
                     console.log(request.data, request.status);
                     if(request.status !== 1) {
