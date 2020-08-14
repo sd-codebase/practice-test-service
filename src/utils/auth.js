@@ -36,10 +36,13 @@ export const handleAuth = app => {
         if (httpMethod !== 'OPTIONS' && isAuthRequired(httpMethod, apiUrl)) {
             let authHeader = req.header('Authorization');
             let sessionID = authHeader && authHeader.split(' ')[1];
+            console.log(sessionID);
             if (sessionID) {
                 let url = `https://test-for-all-services.herokuapp.com/api/users/get-user-for-verification?sessionID=${sessionID}`;
                 try {
                     const request = await axios.get(url);
+                    
+                    console.log(sessionID);
                     if(request.status !== 1) {
                         throw {re: request}
                     }
