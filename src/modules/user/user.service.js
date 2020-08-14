@@ -1,6 +1,6 @@
 import { UserModel as User, GuestUserModel as GuestUser, GuestUserGroupModel as Group} from './user.model';
 import { ApiEndpointsModel } from '../api-endpoints/api-endpoint.model';
-import { generateJWTToken } from './../../utils/auth';
+import { generateJWTToken, verifyJWTToken } from './../../utils/auth';
 
 export class UserService {
     static async getUser(userId) {
@@ -37,6 +37,22 @@ export class UserService {
             return {
                 status: 0,
                 err
+            };
+        }
+    }
+
+    static async verifyToken(query) {
+        const user = verifyJWTToken(query.sessionID);
+        if (user) {
+            if(userType.userType === 'Guest') {
+                return await UserService.getGuestUserByDetails({_id: user._id, email:user.email})
+            } else {
+                return await UserService.getUserByDetails({_id: user._id, email:user.email});
+            }
+        } else {
+            return {
+                status: 0,
+                err: 'Token is not valid'
             };
         }
     }

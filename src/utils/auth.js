@@ -1,7 +1,6 @@
 const axios = require('axios');
 import jwt from 'jsonwebtoken';
 import { authRoutes } from './auth-routes';
-import { UserService } from './../modules/user/user.service';
 import { SECRETE_KEY } from './../../config';
 
 const SECRET_KEY = process.env.SECRETE_KEY || SECRETE_KEY;
@@ -36,56 +35,24 @@ export const handleAuth = app => {
         const httpMethod = req.method;
         if (httpMethod !== 'OPTIONS' && isAuthRequired(httpMethod, apiUrl)) {
             let authHeader = req.header('Authorization');
-            console.log(authHeader)
             let sessionID = authHeader && authHeader.split(' ')[1];
             if (sessionID) {
-                let userData = verifyJWTToken(sessionID);
-                console.log(userData)
-                if (userData) {
-                    let user;
-                    let url = `https://test-for-all-services.herokuapp.com/api/users/get-user-for-verification?email=${userData.email}`;
-                    if (userData.userType === 'Guest') {
-                        url = `https://test-for-all-services.herokuapp.com/api/users/get-user-for-verification?email=${userData.email}&isGuest=true`;
+                let url = `https://test-for-all-services.herokuapp.com/api/users/get-user-for-verification?sessionID=${sessionID}`;
+                try {
+                    const request = await axios.get(url);
+                    if(request.status !== 1) {
+                        throw {re: request}
                     }
-                    try {
-                        const request = await axios.get(url);
-                        console.log(request.status, reuest.data)
-                        if(request.status !== 200) {
-                            throw {err:request};
-                        }
-                        user = request.data;
-                    } catch (e) {
-                        console.log("1qwert",e)
-                        res.status(401).send({
-                            error: {
-                                reason: "Unauthorized Access",
-                                code: 401,
-                                e
-                            }
-                        });
-                    }
-                    if(user.status !== 1) {
-                        console.log("2asddff")
-                        res.status(401).send({
-                            error: {
-                                reason: "Unauthorized Access",
-                                code: 401,
-                                e: 'User error while finding user'
-                            }
-                        });
-                    }
-                } else {
-                    console.log("3asddff")
+                } catch (e) {
                     res.status(401).send({
                         error: {
                             reason: "Unauthorized Access",
                             code: 401,
-                            e: 'Jwt not vwrified'
-                          }
+                            e
+                        }
                     });
                 }
             } else {
-                console.log("4asddff")
                 res.status(401).send({
                     error: {
                         reason: "Missing Sessiontoken",
