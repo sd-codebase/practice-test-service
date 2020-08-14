@@ -40,12 +40,14 @@ export const handleAuth = app => {
             if (sessionID) {
                 let userData = verifyJWTToken(sessionID);
                 if (userData) {
+                    console.log(userData);
                     let user;
-                    let url = `https://test-for-all-services.herokuapp.com/api/get-user-for-verification?email=${userData.email}`;
+                    let url = `https://test-for-all-services.herokuapp.com/api/users/get-user-for-verification?email=${userData.email}`;
                     if (userData.userType === 'Guest') {
-                        url = `https://test-for-all-services.herokuapp.com/api/get-user-for-verification?email=${userData.email}&isGuest=true`;
+                        url = `https://test-for-all-services.herokuapp.com/api/users/get-user-for-verification?email=${userData.email}&isGuest=true`;
                     }
                     user = await axios.get(url);
+                    console.log(user);
                     if(user.status !== 1) {
                         res.status(401).send({
                             error: {
