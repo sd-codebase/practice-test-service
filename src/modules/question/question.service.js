@@ -131,7 +131,7 @@ export class QuestionService {
         }
     }
 
-    static async createQuestion(question, userToVerify, courses=[]) {
+    static async createQuestion(question, userToVerify, course='') {
         try {
             const criteria = {
                 'question': question.question,
@@ -149,7 +149,7 @@ export class QuestionService {
                 );
                 question.verifiedBy = userToVerify;
                 question.isVerified = false;
-                question.chapter.course = courses;
+                question.chapter.course = course ? [course] : [];
                 question = await question.save();
             } else {
                 let tags = savedQuestion.tags;
@@ -175,10 +175,10 @@ export class QuestionService {
         }
     }
 
-    static async uploadQuestions({questions, userId, courses}){
+    static async uploadQuestions({questions, userId, course}){
         const uploadResult = [];
         for(let i=0; i<questions.length; i++) {
-            uploadResult.push(await QuestionService.createQuestion(questions[i], userId, courses));
+            uploadResult.push(await QuestionService.createQuestion(questions[i], userId, course));
         }
         return uploadResult;
     }

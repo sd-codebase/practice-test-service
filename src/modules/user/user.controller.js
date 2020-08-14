@@ -68,6 +68,12 @@ async function getUserGroups (req, res, next) {
     res.send(data);
 };
 
+export async function getCourses(req, res, next) {
+    const {status, data, err} = await UserService.getCourses();
+    if(status === 0) return next(err);
+    res.send(data);
+}
+
 export {
     getUser, saveUser, authenticateUser,
     createUserBelongsToInstructor, fetchUsersByInstructor,

@@ -1,7 +1,6 @@
 import { TestModel as Test, GuestTestModel as GuestTest} from './test.model';
 import { QuestionService } from '../question/question.service';
 import { MockTestService } from '../mock-test/mock-test.service';
-import { UserService } from '../user/user.service';
 import { isEqual } from 'lodash';
 
 export class TestService {
@@ -76,10 +75,9 @@ export class TestService {
         }
     }
     
-    static async getPredefinedTests(userId) {
+    static async getPredefinedTests(course) {
         try {
-            let {data: user} = await UserService.getUser(userId);
-            let tests = await Test.find({'isPredefined': true, courses: {$in : user.courses}}).exec();
+            let tests = await Test.find({'isPredefined': true, course: course}).exec();
             return {
                 status: 1,
                 data: tests
@@ -109,7 +107,7 @@ export class TestService {
         }
     }
 
-    static async uploadPredefinedTest({testmeta, questions, userId, courses}) {
+    static async uploadPredefinedTest({testmeta, questions, userId, course}) {
         try{
             let test = await Test.findOne({'testName': testmeta.name}).exec();
             const uploadResult = [];
@@ -132,7 +130,7 @@ export class TestService {
                     isSubmitted: true,
                     paragraphs,
                     hasParagraph: paragraphs > 0,
-                    courses
+                    course
                 });
                 let testDoc = await test.save();
                 testDoc = testDoc.toJSON();

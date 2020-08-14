@@ -16,7 +16,7 @@ async function getTests (req, res, next) {
 };
 
 async function getPerdefinedTests (req, res, next) {
-    const {status, data, err} = await TestService.getPredefinedTests(req.params.userId);
+    const {status, data, err} = await TestService.getPredefinedTests(req.params.course);
     if(status === 0) return next(err);
     res.send(data);
 };

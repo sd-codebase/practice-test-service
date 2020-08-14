@@ -27,7 +27,7 @@ const schema = {
     sectionWisePercentage: {type: [SectionWisePercentageSchema]},
     result: {type: Boolean},
     totalMarks: {type: Number},
-    courses: {type:[String]},
+    course: {type:String},
     users: {type:[String]},
 };
 

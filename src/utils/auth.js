@@ -40,14 +40,25 @@ export const handleAuth = app => {
             if (sessionID) {
                 let userData = verifyJWTToken(sessionID);
                 if (userData) {
-                    console.log(userData);
                     let user;
                     let url = `https://test-for-all-services.herokuapp.com/api/users/get-user-for-verification?email=${userData.email}`;
                     if (userData.userType === 'Guest') {
                         url = `https://test-for-all-services.herokuapp.com/api/users/get-user-for-verification?email=${userData.email}&isGuest=true`;
                     }
-                    const request = await axios.get(url);
-                    user = request.data;
+                    try {
+                        const request = await axios.get(url);
+                        if(request.status !== 200) {
+                            throw new Error();
+                        }
+                        user = request.data;
+                    } catch (e) {
+                        res.status(401).send({
+                            error: {
+                                reason: "Unauthorized Access",
+                                code: 401
+                            }
+                        });
+                    }
                     if(user.status !== 1) {
                         res.status(401).send({
                             error: {

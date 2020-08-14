@@ -248,4 +248,19 @@ export class UserService {
             };
         }
     }
+
+    static async getCourses() {
+        try {
+            let courses = await ApiEndpointsModel.find({}).exec();
+            return {
+                status: 1,
+                data: courses
+            };
+        } catch (err){
+            return {
+                status: 0,
+                err
+            };
+        }
+    }
 }
