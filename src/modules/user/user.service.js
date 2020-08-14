@@ -42,9 +42,7 @@ export class UserService {
     }
 
     static async verifyToken(query) {
-        console.log('in service', query)
         const user = verifyJWTToken(query.sessionID);
-        console.log(user)
         if (user) {
             if(user.userType === 'Guest') {
                 return await UserService.getGuestUserByDetails({_id: user._id, email:user.email});

@@ -41,7 +41,6 @@ export const handleAuth = app => {
                 try {
                     const request = await axios.post(url,{sessionID});
                     
-                    console.log(request.data, request.status);
                     if(request.data.status !== 1) {
                         throw {re: request}
                     }
