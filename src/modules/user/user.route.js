@@ -5,6 +5,7 @@ const UserRoutes = express.Router();
 
 
 // a simple test url to check that all of our files are communicating correctly.
+UserRoutes.get('/get-user-for-verification', User.getUserByDetails);
 UserRoutes.get('/:userId', User.getUser);
 UserRoutes.post('/', User.saveUser);
 UserRoutes.get('/fetch-guests/:userId', User.fetchUsersByInstructor);

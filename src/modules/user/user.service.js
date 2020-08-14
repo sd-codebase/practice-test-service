@@ -1,4 +1,5 @@
 import { UserModel as User, GuestUserModel as GuestUser, GuestUserGroupModel as Group} from './user.model';
+import { ApiEndpointsModel } from '../api-endpoints/api-endpoint.model';
 import { generateJWTToken } from './../../utils/auth';
 
 export class UserService {
@@ -89,9 +90,14 @@ export class UserService {
         try {
             let savedUser = await User.findOne({'email': user.email, 'password': user.password}).exec();
             if (savedUser) {
+                let endpoints = await ApiEndpointsModel.find({'course': {$in: savedUser.courses}}).exec();
                 return {
-                    status: 1,
-                    data: { savedUser, token: generateJWTToken({_id: savedUser._id, email: savedUser.email, password: savedUser.password, userType: 'User'})}
+                        status: 1,
+                    data: {
+                        savedUser, 
+                        token: generateJWTToken({_id: savedUser._id, email: savedUser.email, password: savedUser.password, userType: 'User'}),
+                        endpoints
+                    }
                 };
             } else {
                 return {
@@ -111,9 +117,14 @@ export class UserService {
         try {
             let savedUser = await GuestUser.findOne({'email': user.email}).exec();
             if (savedUser) {
+                let endpoints = await ApiEndpointsModel.find({}).exec();
                 return {
                     status: 1,
-                    data: { savedUser, token: generateJWTToken({_id: savedUser._id, email: savedUser.email, userType: 'Guest'})}
+                    data: { 
+                        savedUser,
+                        token: generateJWTToken({_id: savedUser._id, email: savedUser.email, userType: 'Guest'}),
+                        endpoints
+                    }
                 };
             } else {
                 return {

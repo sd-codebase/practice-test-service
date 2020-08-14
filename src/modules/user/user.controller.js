@@ -7,6 +7,19 @@ async function getUser (req, res, next) {
     res.send(data);
 };
 
+async function getUserByDetails (req, res, next) {
+    const queryObject = url.parse(req.url,true).query;
+    if (queryObject.isGuest) {
+        const {status, data, err} = await UserService.getGuestUserByDetails(queryObject);
+        if(status === 0) return next(err);
+        res.send(data);
+    } else {
+        const {status, data, err} = await UserService.getUserByDetails(queryObject);
+        if(status === 0) return next(err);
+        res.send(data);
+    }
+};
+
 async function saveUser (req, res, next) {
     const {status, data, err} = await UserService.saveUser(req.body);
     if(status === 0) return next(err);
@@ -59,5 +72,5 @@ export {
     getUser, saveUser, authenticateUser,
     createUserBelongsToInstructor, fetchUsersByInstructor,
     createGuestUserGroup, updateUserToGroup,
-    getUserGroups,
+    getUserGroups, getUserByDetails
 };

@@ -1,3 +1,4 @@
+const axios = require('axios');
 import jwt from 'jsonwebtoken';
 import { authRoutes } from './auth-routes';
 import { UserService } from './../modules/user/user.service';
@@ -40,11 +41,11 @@ export const handleAuth = app => {
                 let userData = verifyJWTToken(sessionID);
                 if (userData) {
                     let user;
+                    let url = `https://test-for-all-services.herokuapp.com/api/get-user-for-verification?_id=${userData._id}`;
                     if (userData.userType === 'Guest') {
-                        user = await UserService.getGuestUserByDetails({email:userData.email, _id: userData._id});
-                    } else {
-                        user = await UserService.getUserByDetails({email:userData.email, password: userData.password, _id: userData._id});
+                        url = `https://test-for-all-services.herokuapp.com/api/get-user-for-verification?_id=${userData._id}&isGuest=true`;
                     }
+                    user = await axios.get(url);
                     if(user.status !== 1) {
                         res.status(401).send({
                             error: {
