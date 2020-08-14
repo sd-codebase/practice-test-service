@@ -44,6 +44,7 @@ export class UserService {
     static async verifyToken(query) {
         console.log('in service', query)
         const user = verifyJWTToken(query.sessionID);
+        console.log(user)
         if (user) {
             if(user.userType === 'Guest') {
                 return await UserService.getGuestUserByDetails({_id: user._id, email:user.email});
@@ -53,7 +54,7 @@ export class UserService {
         } else {
             return {
                 status: 0,
-                err: 'Token is not valid'
+                err: {message: 'Token is not valid'}
             };
         }
     }
