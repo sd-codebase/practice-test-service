@@ -48,14 +48,15 @@ export const handleAuth = app => {
                     try {
                         const request = await axios.get(url);
                         if(request.status !== 200) {
-                            throw new Error();
+                            throw {err:request};
                         }
                         user = request.data;
                     } catch (e) {
                         res.status(401).send({
                             error: {
                                 reason: "Unauthorized Access",
-                                code: 401
+                                code: 401,
+                                e
                             }
                         });
                     }
@@ -63,7 +64,8 @@ export const handleAuth = app => {
                         res.status(401).send({
                             error: {
                                 reason: "Unauthorized Access",
-                                code: 401
+                                code: 401,
+                                e: 'User error while finding user'
                             }
                         });
                     }
@@ -71,7 +73,8 @@ export const handleAuth = app => {
                     res.status(401).send({
                         error: {
                             reason: "Unauthorized Access",
-                            code: 401
+                            code: 401,
+                            e: 'Jwt not vwrified'
                           }
                     });
                 }
