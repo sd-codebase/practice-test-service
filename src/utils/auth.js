@@ -36,6 +36,7 @@ export const handleAuth = app => {
         const httpMethod = req.method;
         if (httpMethod !== 'OPTIONS' && isAuthRequired(httpMethod, apiUrl)) {
             let authHeader = req.header('Authorization');
+            console.log(authHeader)
             let sessionID = authHeader && authHeader.split(' ')[1];
             if (sessionID) {
                 let userData = verifyJWTToken(sessionID);
