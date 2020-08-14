@@ -25,7 +25,7 @@ export const verifyJWTToken = jwtToken => {
     try{
         return jwt.verify(jwtToken, SECRET_KEY);
      }catch(e){
-        return {e};
+        return e;
     }
 }
 
