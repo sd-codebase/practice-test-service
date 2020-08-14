@@ -41,9 +41,9 @@ export const handleAuth = app => {
                 let userData = verifyJWTToken(sessionID);
                 if (userData) {
                     let user;
-                    let url = `https://test-for-all-services.herokuapp.com/api/get-user-for-verification?_id=${userData._id}`;
+                    let url = `https://test-for-all-services.herokuapp.com/api/get-user-for-verification?email=${userData.email}`;
                     if (userData.userType === 'Guest') {
-                        url = `https://test-for-all-services.herokuapp.com/api/get-user-for-verification?_id=${userData._id}&isGuest=true`;
+                        url = `https://test-for-all-services.herokuapp.com/api/get-user-for-verification?email=${userData.email}&isGuest=true`;
                     }
                     user = await axios.get(url);
                     if(user.status !== 1) {
