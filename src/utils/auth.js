@@ -40,7 +40,7 @@ export const handleAuth = app => {
             let sessionID = authHeader && authHeader.split(' ')[1];
             if (sessionID) {
                 let userData = verifyJWTToken(sessionID);
-                console.log(authHeader)
+                console.log(userData)
                 if (userData) {
                     let user;
                     let url = `https://test-for-all-services.herokuapp.com/api/users/get-user-for-verification?email=${userData.email}`;
