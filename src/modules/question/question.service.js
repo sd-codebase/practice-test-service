@@ -78,7 +78,7 @@ export class QuestionService {
             for (const section of sectionList) {
                 const sizeOfSample = section.questionNumberTo - section.questionNumberFrom + 1;
                 const filter = {
-                    "chapter.course": { $elemMatch: {$eq: course} },
+                    "chapter.courses": { $elemMatch: {$eq: course} },
                     "chapter.subject": section.subject,
                     "answer": { '$ne': 'bonus' },
                 };

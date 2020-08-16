@@ -106,15 +106,16 @@ export class UserService {
         try {
             let savedUser = await User.findOne({'email': user.email, 'password': user.password}).exec();
             if (savedUser) {
+                savedUser = savedUser.toJSON();
                 let criteria = {'course': {$in: savedUser.courses}};
                 if(savedUser.role === 3) { //isAdmin
                     criteria = {};
                 }
                 let endpoints = await ApiEndpointsModel.find(criteria).exec();
                 if(savedUser.role === 3) { //isAdmin
-                    savedUser = savedUser.toJSON();
                     savedUser.courses = endpoints.map(endPoint => endPoint.course);
                 }
+                savedUser.courses.sort();
                 return {
                         status: 1,
                     data: {
