@@ -106,6 +106,7 @@ export class QuestionService {
                     filter.infoPara = null;
                     filter.noOfAnswers = section.type;
                 }
+                console.log(filter, sizeOfSample)
                 const questions = await Question.aggregate([{ $match: filter}, {$sample: {size: sizeOfSample}}]).exec();
                 questionList = [...questionList, ...questions];
             }
