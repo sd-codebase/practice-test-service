@@ -111,6 +111,10 @@ export class UserService {
                     criteria = {};
                 }
                 let endpoints = await ApiEndpointsModel.find(criteria).exec();
+                if(savedUser.role === 3) { //isAdmin
+                    savedUser = savedUser.toJSON();
+                    savedUser.courses = endpoints.map(endPoint => endPoint.course);
+                }
                 return {
                         status: 1,
                     data: {
