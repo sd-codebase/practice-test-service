@@ -49,6 +49,6 @@ export { TestModel, GuestTestModel };
 export const COURSES = {
     NEET : 'Neet',
     JEE_MAINS : 'Jee Mains',
-    JEE_ADV_PAPER_1 : 'Jee Advanced Paper 1',
-    JEE_ADV_PAPER_2 : 'Jee Advanced Paper 2',
+    JEE_ADV_PAPER_1 : 'Jee Advance Paper 1',
+    JEE_ADV_PAPER_2 : 'Jee Advance Paper 2',
 }
