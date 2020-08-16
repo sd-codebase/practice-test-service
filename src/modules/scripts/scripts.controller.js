@@ -1,9 +1,11 @@
 const { ScriptService } = require('./scripts.services');
 
 export async function updateNoOfAnswers (req, res, next) {
-    res.send(await ScriptService.updateNoOfAnswers());
+    ScriptService.updateNoOfAnswers()
+    res.send({status: 1, message: 'Job started'});
 };
 
 export async function updateCourses (req, res, next) {
-    res.send(await ScriptService.updateCourses());
+    ScriptService.updateCourses()
+    res.send({status: 1, message: 'Job started'});
 };
