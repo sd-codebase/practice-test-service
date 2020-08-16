@@ -1,9 +1,10 @@
 const axios = require('axios');
 import jwt from 'jsonwebtoken';
 import { authRoutes } from './auth-routes';
-import { SECRETE_KEY } from './../../config';
+import { SECRETE_KEY, ENV } from './../../config';
 
 const SECRET_KEY = process.env.SECRETE_KEY || SECRETE_KEY;
+const ENVR = process.env.ENV || ENV;
 
 export const isAuthRequired = (httpMethod, url) => {
     for (let routeObj of authRoutes) {
@@ -38,6 +39,9 @@ export const handleAuth = app => {
             let sessionID = authHeader && authHeader.split(' ')[1];
             if (sessionID) {
                 let url = `https://test-for-all-services.herokuapp.com/api/users/get-user-for-verification`;
+                if(ENVR === 'dev') {
+                    url = `http://localhost:3000/api/users/get-user-for-verification`;
+                }
                 try {
                     const request = await axios.post(url,{sessionID});
                     
