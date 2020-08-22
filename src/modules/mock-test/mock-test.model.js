@@ -1,7 +1,7 @@
 import {Schema, mongoose} from '../../lib/mongoose.lib';
 
 let MockTestSchema = new Schema({
-    paperName: {type: String, unique:true},
+    paperName: {type: String},
     course: {type: String},
     type: {type: Number, default: 0},
     noOfQuestions: {type: Number},
