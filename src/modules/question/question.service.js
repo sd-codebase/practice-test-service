@@ -149,7 +149,7 @@ export class QuestionService {
                 );
                 question.verifiedBy = userToVerify;
                 question.isVerified = false;
-                question.chapter.course = course ? [course] : [];
+                question.chapter.courses = course ? [course] : [];
                 question = await question.save();
             } else {
                 let tags = savedQuestion.tags;

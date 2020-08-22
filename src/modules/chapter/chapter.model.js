@@ -1,7 +1,7 @@
 import {Schema, mongoose} from '../../lib/mongoose.lib';
 
 let ChapterSchema = new Schema({
-    courses: {type: String},
+    course: {type: String},
     class: {type: String},
     subject: {type: String},
     chapter: {type: String},
