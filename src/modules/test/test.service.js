@@ -113,7 +113,7 @@ export class TestService {
             const uploadResult = [];
             for(let i=0; i<questions.length; i++) {
                 questions[i].sortOrder = i;
-                const que = await QuestionService.createQuestion(questions[i], userId);
+                const que = await QuestionService.createQuestion(questions[i], userId, course);
                 uploadResult.push(que);
             }
 
