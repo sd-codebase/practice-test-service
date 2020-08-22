@@ -130,7 +130,7 @@ export class UserService {
         try {
             let savedUser = await User.findOne({'email': email, 'otp': otp}).exec();
             if (savedUser) {
-                savedUser = await User.updateOne({'_id': savedUser._id}, {password: md5(password)}).exec();
+                savedUser = await User.updateOne({'_id': savedUser._id}, {password: md5(password), otp: ''}).exec();
             } else {
                 throw {message: "Probably Otp incorrect"};
             }
@@ -168,7 +168,7 @@ export class UserService {
 
     static async authenticateUser(user) {
         try {
-            let savedUser = await User.findOne({'email': user.email, 'password': user.password}).exec();
+            let savedUser = await User.findOne({'email': user.email, 'password': md5(user.password)}).exec();
             if (savedUser) {
                 savedUser = savedUser.toJSON();
                 let criteria = {'course': {$in: savedUser.courses}};

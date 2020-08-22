@@ -6,7 +6,7 @@ let UserSchema = new Schema({
     name: {type: String},
     contact: {type: String},
     email_verified: {type: Boolean, default: false},
-    role: {type: Number, default: 0},
+    role: {type: Number, default: 2},
     courses: {type: [String]},
     otp: {type: String},
     createdAt: {type: Date, default: Date.now()},
