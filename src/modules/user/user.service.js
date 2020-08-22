@@ -1,6 +1,7 @@
 import { UserModel as User, GuestUserModel as GuestUser, GuestUserGroupModel as Group} from './user.model';
 import { ApiEndpointsModel } from '../api-endpoints/api-endpoint.model';
 import { generateJWTToken, verifyJWTToken } from './../../utils/auth';
+const md5 = require('md5');
 
 export class UserService {
     static async getUser(userId) {
@@ -87,12 +88,75 @@ export class UserService {
                 user._id = savedUser._id;
                 await User.updateOne({'_id': savedUser._id}, user).exec();
             } else {
+                user.password = md5(user.password);
                 user = new User(user);
                 user.save();
             }
             return {
                 status: 1,
                 data: user
+            };
+        } catch (err){
+            return {
+                status: 0,
+                err
+            };
+        }
+    }
+
+    static async forgotPassword({email}) {
+        try {
+            let savedUser = await User.findOne({'email': email}).exec();
+            if (savedUser) {
+                savedUser = savedUser.toJSON();
+                savedUser.otp = ""+Math.floor(1000 + Math.random() * 9000);
+                await User.updateOne({'_id': savedUser._id}, {otp: savedUser.otp}).exec();
+            } else {
+                throw {message: "No user found"}
+            }
+            return {
+                status: 1,
+                data: savedUser
+            };
+        } catch (err){
+            return {
+                status: 0,
+                err
+            };
+        }
+    }
+
+    static async resetPassword({email, otp, password}) {
+        try {
+            let savedUser = await User.findOne({'email': email, 'otp': otp}).exec();
+            if (savedUser) {
+                savedUser = await User.updateOne({'_id': savedUser._id}, {password: md5(password)}).exec();
+            } else {
+                throw {message: "Probably Otp incorrect"};
+            }
+            return {
+                status: 1,
+                data: savedUser
+            };
+        } catch (err){
+            return {
+                status: 0,
+                err
+            };
+        }
+    }
+
+    static async changePassword({email, oldPassword, password}) {
+        try {
+            let savedUser = await User.findOne({'email': email, password: md5(oldPassword)}).exec();
+            if (savedUser) {
+                savedUser = await User.updateOne({'_id': savedUser._id}, {password: md5(password)}).exec();
+            } else {
+                throw {message: "User not found"};
+            }
+            return {
+                status: 1,
+                data: savedUser
             };
         } catch (err){
             return {

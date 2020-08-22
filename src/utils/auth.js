@@ -19,7 +19,7 @@ export const isAuthRequired = (httpMethod, url) => {
 }
 
 export const generateJWTToken = userData => {
-    return jwt.sign(userData, SECRET_KEY, { expiresIn: '12h' });
+    return jwt.sign(userData, SECRET_KEY, { expiresIn: '30d' });
 }
 
 export const verifyJWTToken = jwtToken => {

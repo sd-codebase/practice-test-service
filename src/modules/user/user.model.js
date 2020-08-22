@@ -8,6 +8,7 @@ let UserSchema = new Schema({
     email_verified: {type: Boolean, default: false},
     role: {type: Number, default: 0},
     courses: {type: [String]},
+    otp: {type: String},
     createdAt: {type: Date, default: Date.now()},
     updatedAt: {type: Date, default: Date.now()}
 });

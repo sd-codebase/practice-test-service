@@ -5,7 +5,7 @@ async function getUser (req, res, next) {
     const {status, data, err} = await UserService.getUser(req.params.userId);
     if(status === 0) return next(err);
     res.send(data);
-};
+};//forgotPassword
 
 async function getUserByDetails (req, res, next) {
     const {status, data, err} = await UserService.verifyToken(req.body);
@@ -66,6 +66,24 @@ export async function getCourses(req, res, next) {
     if(status === 0) return next(err);
     res.send(data);
 }
+
+export async function forgotPassword (req, res, next) {
+    const {status, data, err} = await UserService.forgotPassword(req.body);
+    if(status === 0) return next(err);
+    res.send(data);
+};
+
+export async function resetPassword (req, res, next) {
+    const {status, data, err} = await UserService.resetPassword(req.body);
+    if(status === 0) return next(err);
+    res.send(data);
+};
+
+export async function changePassword (req, res, next) {
+    const {status, data, err} = await UserService.changePassword(req.body);
+    if(status === 0) return next(err);
+    res.send(data);
+};
 
 export {
     getUser, saveUser, authenticateUser,

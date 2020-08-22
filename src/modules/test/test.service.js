@@ -377,6 +377,7 @@ export class TestService {
             }
             for(let queNum of queNums) {
                 const question = test.questions.find( que => que.sortOrder === queNum);
+                console.log(queNum, question)
                 const {data: questionFromDb} = await QuestionService.getQuestionById(question.id);
                 if(question.isSubmitted) {
                     TestService.calculateAnswers(testConfig.isNegativeMarking,section, question, questionFromDb);

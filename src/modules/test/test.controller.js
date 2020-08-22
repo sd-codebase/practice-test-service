@@ -23,13 +23,13 @@ async function getPerdefinedTests (req, res, next) {
 
 async function createTest (req, res, next) {
     const {status, data, err} = await TestService.createTest(req.body);
-    if(status === 0) return next(err);
+    if(status === 0) res.status(500).send(err);
     res.send(data);
 };
 
 async function createMockTest (req, res, next) {
     const {status, data, err} = await TestService.createMockTest(req.body);
-    if(status === 0) return next(err);
+    if(status === 0) res.status(500).send(err);
     res.send(data);
 };
 

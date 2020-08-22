@@ -27,7 +27,10 @@ export class MockTestService {
         try {
             let criteria = {};
             if( course !== 'All' ) {
-                criteria = {'course' : course};
+                criteria = {
+                    'course' : course,
+                    'createdBy' : 'ADMIN'
+                };
             }
             const mockTests = await MockTest.find(criteria).exec();
             return {status: 1, data: mockTests};

@@ -16,4 +16,8 @@ UserRoutes.post('/update-users-to-group', User.updateUserToGroup);
 UserRoutes.get('/user-groups/:userId', User.getUserGroups);
 UserRoutes.post('/authenticate', User.authenticateUser);
 
+UserRoutes.put('/forgot-password', User.forgotPassword);
+UserRoutes.put('/reset-password', User.resetPassword);
+UserRoutes.put('/change-password', User.changePassword);
+
 export { UserRoutes };
