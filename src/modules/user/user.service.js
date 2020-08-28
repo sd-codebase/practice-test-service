@@ -169,6 +169,7 @@ export class UserService {
     static async authenticateUser(user) {
         try {
             let savedUser = await User.findOne({'email': user.email, 'password': md5(user.password)}).exec();
+            console.log(user,savedUser)
             if (savedUser) {
                 savedUser = savedUser.toJSON();
                 let criteria = {'course': {$in: savedUser.courses}};
