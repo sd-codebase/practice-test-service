@@ -110,12 +110,13 @@ export class TestService {
     static async uploadPredefinedTest({testmeta, questions, userId, course}) {
         try{
             let test = await Test.findOne({'testName': testmeta.name}).exec();
-            const uploadResult = [];
+            let uploadResult = [];
             for(let i=0; i<questions.length; i++) {
                 questions[i].sortOrder = i;
-                const que = await QuestionService.createQuestion(questions[i], userId, course);
-                uploadResult.push(que);
+                uploadResult.push(QuestionService.createQuestion(questions[i], userId, course));
             }
+
+            uploadResult = await Promise.all(uploadResult);
 
             let questionIds = uploadResult.map(res => res.data._id);
             let paragraphs = [...new Set(uploadResult.map(res => res.data.infoPara))].filter( infoPara => infoPara);

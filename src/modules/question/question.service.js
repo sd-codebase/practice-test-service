@@ -179,9 +179,10 @@ export class QuestionService {
         const uploadResult = [];
         for(let i=0; i<questions.length; i++) {
             questions[i].sortOrder = i;
-            uploadResult.push(await QuestionService.createQuestion(questions[i], userId, course));
+            // uploadResult.push(await QuestionService.createQuestion(questions[i], userId, course));
+            uploadResult.push(QuestionService.createQuestion(questions[i], userId, course));
         }
-        return uploadResult;
+        return await Promise.all(uploadResult);
     }
 
     static async getAnswer(questionId) {
