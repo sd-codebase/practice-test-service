@@ -178,6 +178,7 @@ export class QuestionService {
     static async uploadQuestions({questions, userId, course}){
         const uploadResult = [];
         for(let i=0; i<questions.length; i++) {
+            questions[i].sortOrder = i;
             uploadResult.push(await QuestionService.createQuestion(questions[i], userId, course));
         }
         return uploadResult;
