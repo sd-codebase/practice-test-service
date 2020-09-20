@@ -54,7 +54,6 @@ export class ScriptService {
 
             let chapters = await QuestionModel.find({}).distinct('chapter.topic').exec();
             chapters = chapters.filter( ch => ch);
-            console.log(chapters)
             let promises = chapters.map( ch => QuestionModel.findOne({'chapter.topic': ch}).exec());
             let results = await Promise.all(promises);
             results = results.map(res => res.chapter);
