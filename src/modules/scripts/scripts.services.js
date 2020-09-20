@@ -52,31 +52,31 @@ export class ScriptService {
             }
             
 
-            // let chapters = await QuestionModel.find({}).distinct('chapter.topic').exec();
-            // chapters = chapters.filter( ch => ch);
-            // console.log(chapters)
-            // let promises = chapters.map( ch => QuestionModel.findOne({'chapter.topic': ch}).exec());
-            // let results = await Promise.all(promises);
-            // results = results.map(res => res.chapter);
-            // let finalTopics = [];
-            // for(let ob of results) {
-            //     let topicsObjs = ob.courses.map( crs => {
-            //         return {
-            //             course: crs,
-            //             subject: ob.subject,
-            //             chapter: ob.chapter,
-            //             topic: ob.topic
-            //         }
-            //     });
-            //     finalTopics = [...finalTopics, ... topicsObjs];
-            // }
-            // for(let topic of finalTopics) {
-            //     const savedTopic = await ChapterModel.findOne(topic).exec();
-            //     if (!savedTopic) {
-            //         const newTopic = new ChapterModel(topic);
-            //         newTopic.save();
-            //     }
-            // }
+            let chapters = await QuestionModel.find({}).distinct('chapter.topic').exec();
+            chapters = chapters.filter( ch => ch);
+            console.log(chapters)
+            let promises = chapters.map( ch => QuestionModel.findOne({'chapter.topic': ch}).exec());
+            let results = await Promise.all(promises);
+            results = results.map(res => res.chapter);
+            let finalTopics = [];
+            for(let ob of results) {
+                let topicsObjs = ob.courses.map( crs => {
+                    return {
+                        course: crs,
+                        subject: ob.subject,
+                        chapter: ob.chapter,
+                        topic: ob.topic
+                    }
+                });
+                finalTopics = [...finalTopics, ... topicsObjs];
+            }
+            for(let topic of finalTopics) {
+                const savedTopic = await ChapterModel.findOne(topic).exec();
+                if (!savedTopic) {
+                    const newTopic = new ChapterModel(topic);
+                    newTopic.save();
+                }
+            }
         } catch (err){
             console.log(err)
             return err;
