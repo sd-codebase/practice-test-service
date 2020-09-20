@@ -85,6 +85,18 @@ export async function changePassword (req, res, next) {
     res.send(data);
 };
 
+export async function verifyAccount (req, res, next) {
+    const {status, data, err} = await UserService.verifyAccount(req.body);
+    if(status === 0) res.status(500).send(err);
+    res.send(data);
+};
+
+export async function resendOtp (req, res, next) {
+    const {status, data, err} = await UserService.resendOtpForVerification(req.body);
+    if(status === 0) res.status(500).send(err);
+    res.send(data);
+};
+
 export {
     getUser, saveUser, authenticateUser,
     createUserBelongsToInstructor, fetchUsersByInstructor,

@@ -275,18 +275,18 @@ export class TestService {
             switch(testConfig.type) {
                 case 1:
                     testConfig.sections[0].subject = testCriteria.subject;
-                    testConfig.testName = testCriteria.subject;
+                    testConfig.paperName = testCriteria.subject;
                     break;
                 case 2:
                     testConfig.sections[0].subject = testCriteria.subject;
                     testConfig.sections[0].blocks[0].chapters = [testCriteria.chapter];
-                    testConfig.testName = testCriteria.chapter;
+                    testConfig.paperName = testCriteria.chapter;
                     break;
                 case 3:
                     testConfig.sections[0].subject = testCriteria.subject;
                     testConfig.sections[0].blocks[0].chapters = [testCriteria.chapter];
                     testConfig.sections[0].blocks[0].topics = [testCriteria.topic];
-                    testConfig.testName = testCriteria.topic;
+                    testConfig.paperName = testCriteria.topic;
                     break;    
             }
             return await TestService.createTestUsingConfig(userId, testConfig);
@@ -378,7 +378,6 @@ export class TestService {
             }
             for(let queNum of queNums) {
                 const question = test.questions.find( que => que.sortOrder === queNum);
-                console.log(queNum, question)
                 const {data: questionFromDb} = await QuestionService.getQuestionById(question.id);
                 if(question.isSubmitted) {
                     TestService.calculateAnswers(testConfig.isNegativeMarking,section, question, questionFromDb);

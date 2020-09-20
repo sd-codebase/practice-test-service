@@ -9,6 +9,7 @@ let UserSchema = new Schema({
     role: {type: Number, default: 2},
     courses: {type: [String]},
     otp: {type: String},
+    emailRecoveryKey: {type: String},
     createdAt: {type: Date, default: Date.now()},
     updatedAt: {type: Date, default: Date.now()}
 });

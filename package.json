@@ -21,7 +21,8 @@
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.19",
     "md5": "^2.3.0",
-    "mongoose": "^5.9.7"
+    "mongoose": "^5.9.7",
+    "nodemailer": "^6.4.11"
   },
   "devDependencies": {}
 }

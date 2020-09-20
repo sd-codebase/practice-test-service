@@ -1,6 +1,7 @@
 import { UserModel as User, GuestUserModel as GuestUser, GuestUserGroupModel as Group} from './user.model';
 import { ApiEndpointsModel } from '../api-endpoints/api-endpoint.model';
 import { generateJWTToken, verifyJWTToken } from './../../utils/auth';
+import { sendMail } from './../../utils/email-sending.util';
 const md5 = require('md5');
 
 export class UserService {
@@ -89,12 +90,57 @@ export class UserService {
                 await User.updateOne({'_id': savedUser._id}, user).exec();
             } else {
                 user.password = md5(user.password);
+                user.otp = "" + Math.floor(1000 + Math.random() * 9000);
                 user = new User(user);
                 user.save();
+                sendMail('Account Verification', user.email, user.otp, 'Account verification');
             }
             return {
                 status: 1,
                 data: user
+            };
+        } catch (err){
+            return {
+                status: 0,
+                err
+            };
+        }
+    }
+
+    static async resendOtpForVerification({email}) {
+        try {
+            let savedUser = await User.findOne({'email': email}).exec();
+            if (savedUser) {
+                savedUser = savedUser.toJSON();
+                savedUser.otp = "" + Math.floor(1000 + Math.random() * 9000);
+                await User.updateOne({'_id': savedUser._id}, {otp: savedUser.otp}).exec();
+                sendMail('Forgot Password', savedUser.email, savedUser.otp, 'Forgot password');
+            } else {
+                throw {message: "No user found, plaese contact to administrator"}
+            }
+            return {
+                status: 1,
+                data: savedUser
+            };
+        } catch (err){
+            return {
+                status: 0,
+                err
+            };
+        }
+    }
+
+    static async verifyAccount({email, otp}) {
+        try {
+            let savedUser = await User.findOne({'email': email, 'otp': otp}).exec();
+            if (savedUser) {
+                savedUser = await User.updateOne({'_id': savedUser._id}, {email_verified: true, otp: ''}).exec();
+            } else {
+                throw {message: "Probably Otp incorrect"};
+            }
+            return {
+                status: 1,
+                data: savedUser
             };
         } catch (err){
             return {
@@ -109,8 +155,9 @@ export class UserService {
             let savedUser = await User.findOne({'email': email}).exec();
             if (savedUser) {
                 savedUser = savedUser.toJSON();
-                savedUser.otp = ""+Math.floor(1000 + Math.random() * 9000);
+                savedUser.otp = "" + Math.floor(1000 + Math.random() * 9000);
                 await User.updateOne({'_id': savedUser._id}, {otp: savedUser.otp}).exec();
+                sendMail('Forgot Password', email, savedUser.otp, 'Forgot password');
             } else {
                 throw {message: "No user found"}
             }
