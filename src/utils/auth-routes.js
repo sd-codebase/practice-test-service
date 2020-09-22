@@ -14,6 +14,7 @@ export const ROUTES = {
     Note: 'notes',
     MockTest: 'mock-tests',
     Scripts: 'scripts',
+    Reports: 'reports',
 };
 
 const dashboardUrl = `/${API}/${ROUTES.Dashboard}/`;
@@ -24,9 +25,10 @@ const scriptsUrl = `/${API}/${ROUTES.Scripts}/`;
 const chaptersUrl = `/${API}/${ROUTES.Chapter}/`;
 const notesUrl = `/${API}/${ROUTES.Note}/`;
 const mockTestsUrl = `/${API}/${ROUTES.MockTest}/`;
+const reportsUrl = `/${API}/${ROUTES.Reports}/`;
 
 export const authRoutes = [
     dashboardUrl, testsUrl, questionsUrl,
     chaptersUrl, notesUrl, mockTestsUrl,
-    scriptsUrl,
+    scriptsUrl, reportsUrl,
 ];

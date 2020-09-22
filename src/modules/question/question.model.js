@@ -46,10 +46,18 @@ let InfoParagraphSchema = new Schema({
     createdBy: { type: String},
     updatedBy: { type: String},
     tags: {type: String},
+    createdAt: {type: Date, default: Date.now()},
+});
+
+let QuestionReportSchema = new Schema({
+    questionId : { type:  String, required: true},
+    userId: { type: String, required: true},
+    createdAt: {type: Date, default: Date.now()},
 });
 
 
 const QuestionModel = mongoose.model('Question', QuestionSchema);
 const InfoParaModel = mongoose.model('InformationParagraph', InfoParagraphSchema);
+const QuestionReportModel = mongoose.model('QuestionReport', QuestionReportSchema);
 
-export { QuestionModel, SubQuestionSchema, InfoParaModel };
+export { QuestionModel, SubQuestionSchema, InfoParaModel, QuestionReportModel };

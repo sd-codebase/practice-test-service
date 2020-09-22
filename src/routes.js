@@ -7,6 +7,7 @@ import { NotesRoutes } from './modules/notes/notes.route';
 import { MockTestRoutes } from './modules/mock-test/mock-test.route';
 import { ScriptRoutes } from './modules/scripts/scripts.route';
 import { API, ROUTES } from './utils/auth-routes';
+import { ReportsRoutes } from './modules/reports/reports.route';
 
 
 function enableRoutes(app) {
@@ -18,6 +19,7 @@ function enableRoutes(app) {
     app.use(`/${API}/${ROUTES.Note}`, NotesRoutes);
     app.use(`/${API}/${ROUTES.MockTest}`, MockTestRoutes);
     app.use(`/${API}/${ROUTES.Scripts}`, ScriptRoutes);
+    app.use(`/${API}/${ROUTES.Reports}`, ReportsRoutes);
     app.use('/', function(req, res, next){
         res.end('Assessment portal services are running')
     });

@@ -1,4 +1,4 @@
-import { QuestionModel as Question, InfoParaModel as Para} from './question.model';
+import { QuestionModel as Question, InfoParaModel as Para, QuestionReportModel as QuestionReport} from './question.model';
 
 export class QuestionService {
     static async getQuestionById(questionId) {
@@ -106,9 +106,7 @@ export class QuestionService {
                     filter.infoPara = null;
                     filter.noOfAnswers = section.type;
                 }
-                console.log(filter, sizeOfSample)
                 const questions = await Question.aggregate([{ $match: filter}, {$sample: {size: sizeOfSample}}]).exec();
-                console.log(questions.length)
                 questionList = [...questionList, ...questions];
             }
             return {
@@ -230,6 +228,20 @@ export class QuestionService {
         try {
             const paras = await Para.find(query).exec();
             return {status: 1, data: paras};
+        } catch(err){
+            return {status: 0, err};
+        }
+    }
+
+    static async reportQuestions(query) {
+        try {
+            const questionReport = await QuestionReport.findOne(query).exec();
+            if (!questionReport) {
+                let queRep = new QuestionReport(query);
+                queRep = await queRep.save();
+                return {status: 1, data: queRep};
+            }
+            return {status: 1, data: questionReport};
         } catch(err){
             return {status: 0, err};
         }

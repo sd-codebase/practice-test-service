@@ -65,6 +65,12 @@ export async function getInformationParas (req, res, next) {
     res.send(data);
 };
 
+export async function saveReportQuestions (req, res, next) {
+    const {status, data, err} = await QuestionService.reportQuestions(req.body);
+    if(status === 0) res.status(500).send(err);
+    res.send(data);
+};
+
 export { 
     getQuestion, getQuestions, createQuestion,
     uploadQuestions, getAnswer, verifyQuestion,
