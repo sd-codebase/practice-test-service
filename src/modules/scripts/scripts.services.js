@@ -8,12 +8,13 @@ export class ScriptService {
             const results = [];
             const questions = await QuestionModel.find({}).exec();
             for (const question of questions) {
-                if ((question.answer.includes('a') || question.answer.includes('b') || question.answer.includes('c') || question.answer.includes('d')) && question.answer.toLowerCase() !== 'bonus') {
+                if ((question.answer.toString().includes('a') || question.answer.toString().includes('b') || question.answer.toString().includes('c') || question.answer.toString().includes('d')) && question.answer.toString().toLowerCase() !== 'bonus') {
                     const noOfAnswers = question.answer.split(',').length;
-                    const result = await QuestionModel.updateOne({'_id': question._id}, {$set:{ noOfAnswers: noOfAnswers}}).exec();
+                    const result = QuestionModel.updateOne({'_id': question._id}, {$set:{ noOfAnswers: noOfAnswers}}).exec();
                     results.push(result);
                 }
             }
+            await Promise.all(results);
             return results;
         } catch (err){
             return err;
