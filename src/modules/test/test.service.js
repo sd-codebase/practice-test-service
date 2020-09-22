@@ -35,7 +35,7 @@ export class TestService {
                     delete que.verifiedBy;
                     delete que.isVerified;
                     delete que.noOfAnswers;
-                    delete que.tags;
+                    // delete que.tags;
                 });
             }
             if(test.hasParagraph) {
@@ -246,7 +246,7 @@ export class TestService {
                 delete que.verifiedBy;
                 delete que.isVerified;
                 delete que.noOfAnswers;
-                delete que.tags;
+                // delete que.tags;
             });
             if(testDoc.hasParagraph) {
                 const paras = await QuestionService.getParaInfos({paraId: {$in: testDoc.paragraphs}});
