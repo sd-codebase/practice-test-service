@@ -97,6 +97,12 @@ export async function resendOtp (req, res, next) {
     res.send(data);
 };
 
+export async function saveUserWithDeviceId(req, res, next) {
+    const {status, data, err} = await UserService.saveUserWithDeviceId(req.body);
+    if(status === 0) res.status(500).send(err);
+    res.send(data);
+}
+
 export {
     getUser, saveUser, authenticateUser,
     createUserBelongsToInstructor, fetchUsersByInstructor,

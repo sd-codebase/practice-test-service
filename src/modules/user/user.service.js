@@ -48,6 +48,8 @@ export class UserService {
         if (user) {
             if(user.userType === 'Guest') {
                 return await UserService.getGuestUserByDetails({_id: user._id, email:user.email});
+            } else if(user.userType === 'UserWithDeviceId') {
+                return await UserService.getUserByDetails({_id: user._id, deviceId:user.deviceId});
             } else {
                 return await UserService.getUserByDetails({_id: user._id, email:user.email});
             }
@@ -74,6 +76,39 @@ export class UserService {
                 };
             }
             
+        } catch (err){
+            return {
+                status: 0,
+                err
+            };
+        }
+    }
+
+    static async saveUserWithDeviceId(user) {
+        try {
+            let savedUser = await User.findOne({'deviceId': user.deviceId}).exec();
+            if (!savedUser) {
+                user = new User(user);
+                user.save();
+                savedUser = await User.findOne({'deviceId': user.deviceId}).exec();
+            } else {
+                savedUser = savedUser.toJSON();
+                if(!savedUser.courses.includes(user.course)) {
+                    savedUser.courses.push(user.course);
+                    await User.updateOne({'_id': savedUser._id}, {courses: savedUser.courses}).exec();
+                }
+            }
+            let criteria = {'course': {$in: savedUser.courses}};
+            let endpoints = await ApiEndpointsModel.find(criteria).exec();
+            savedUser.courses.sort();
+            return {
+                    status: 1,
+                data: {
+                    savedUser, 
+                    token: generateJWTToken({_id: savedUser._id, deviceId: savedUser.deviceId, userType: 'UserWithDeviceId'}),
+                    endpoints
+                }
+            };
         } catch (err){
             return {
                 status: 0,

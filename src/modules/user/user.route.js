@@ -11,6 +11,7 @@ UserRoutes.post('/get-user-for-verification', User.getUserByDetails);
 UserRoutes.get('/courses', User.getCourses);
 UserRoutes.get('/:userId', User.getUser);
 UserRoutes.post('/', User.saveUser);
+UserRoutes.post('/using-device-id', User.saveUserWithDeviceId);
 UserRoutes.get('/fetch-guests/:userId', User.fetchUsersByInstructor);
 UserRoutes.post('/add-guests', User.createUserBelongsToInstructor);
 UserRoutes.post('/create-guest-user-group', User.createGuestUserGroup);

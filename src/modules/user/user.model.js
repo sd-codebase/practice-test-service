@@ -1,17 +1,18 @@
 import {Schema, mongoose} from '../../lib/mongoose.lib';
 
 let UserSchema = new Schema({
-    email: {type: String, unique:true},
+    email: {type: String},
     password: {type: String},
     name: {type: String},
     contact: {type: String},
     email_verified: {type: Boolean, default: false},
     role: {type: Number, default: 2},
-    courses: {type: [String]},
+    courses: {type: [String], default: []},
     otp: {type: String},
     emailRecoveryKey: {type: String},
     createdAt: {type: Date, default: Date.now()},
-    updatedAt: {type: Date, default: Date.now()}
+    updatedAt: {type: Date, default: Date.now()},
+    deviceId: {type: String},
 });
 
 let GuestUserSchema = new Schema({
