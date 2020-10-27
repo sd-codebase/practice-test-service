@@ -47,10 +47,10 @@ export class ScriptService {
 
     static async updateChapters() {
         try{
-            const questions = await QuestionModel.find({}).exec();
-            for (let que of questions) {
-                await QuestionModel.updateOne({'_id': que._id}, {$set:{ 'chapter.topic': que.chapter.chapter}}).exec();
-            }            
+            // const questions = await QuestionModel.find({}).exec();
+            // for (let que of questions) {
+            //     await QuestionModel.updateOne({'_id': que._id}, {$set:{ 'chapter.topic': que.chapter.chapter}}).exec();
+            // }          
 
             let chapters = await QuestionModel.find({}).distinct('chapter.topic').exec();
             chapters = chapters.filter( ch => ch);
