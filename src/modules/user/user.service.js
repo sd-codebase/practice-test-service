@@ -88,7 +88,7 @@ export class UserService {
         try {
             let savedUser = await User.findOne({'deviceId': user.deviceId}).exec();
             if (!savedUser) {
-                user = new User(user);
+                user = new User({deviceId: user.deviceId, courses: [user.course]});
                 user.save();
                 savedUser = await User.findOne({'deviceId': user.deviceId}).exec();
             } else {
