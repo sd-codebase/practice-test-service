@@ -89,20 +89,20 @@ export class UserService {
             let savedUser = await User.findOne({'deviceId': user.deviceId}).exec();
             if (!savedUser) {
                 user = new User({deviceId: user.deviceId, courses: [user.course]});
-                user.save();
+                await user.save();
                 savedUser = await User.findOne({'deviceId': user.deviceId}).exec();
             } else {
                 savedUser = savedUser.toJSON();
                 if(!savedUser.courses.includes(user.course)) {
                     savedUser.courses.push(user.course);
-                    await User.updateOne({'_id': savedUser._id}, {courses: savedUser.courses}).exec();
+                    await User.updateOne({'_id': savedUser._id}, {courses: savedUser.courses, updatedAt: Date.now()}).exec();
                 }
             }
             let criteria = {'course': {$in: savedUser.courses}};
             let endpoints = await ApiEndpointsModel.find(criteria).exec();
             savedUser.courses.sort();
             return {
-                    status: 1,
+                status: 1,
                 data: {
                     savedUser, 
                     token: generateJWTToken({_id: savedUser._id, deviceId: savedUser.deviceId, userType: 'UserWithDeviceId'}),
