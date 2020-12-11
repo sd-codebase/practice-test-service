@@ -103,6 +103,18 @@ export async function saveUserWithDeviceId(req, res, next) {
     res.send(data);
 }
 
+export async function getNotifications (req, res, next) {
+    // res.send([]);
+    if(req.params.critical) {
+        res.send(['If any issue persists, please logout and login again. Ignore if none.']);
+    } else if(req.params.info) {
+        res.send(['New version(0.0.6) is live now. Please update. Ignore if already updated.']);
+    }
+    // const {status, data, err} = await UserService.fetchUsersByInstructor(req.params.userId);
+    // if(status === 0) res.status(500).send(err);
+    // res.send(data);
+};
+
 export {
     getUser, saveUser, authenticateUser,
     createUserBelongsToInstructor, fetchUsersByInstructor,
