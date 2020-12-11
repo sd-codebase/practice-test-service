@@ -107,7 +107,7 @@ export async function getNotifications(req, res, next) {
     const queryObject = url.parse(req.url,true).query;
     // res.send([]);
     if(queryObject.critical) {
-        res.send(['Emergency Downtime 12 Dec. 01:00 AM to 02:00AM. Please note, Some functionality will not work during downtime.']);
+        res.send(['Emergency Downtime: We are facing server issue. We are working on it']);
     } else if(queryObject.info) {
         res.send(['New version(0.0.6) is live now. Please update. Ignore if already updated.']);
     } else {
