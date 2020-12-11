@@ -104,10 +104,11 @@ export async function saveUserWithDeviceId(req, res, next) {
 }
 
 export async function getNotifications(req, res, next) {
+    const queryObject = url.parse(req.url,true).query;
     // res.send([]);
-    if(req.params.critical) {
-        res.send(['If any issue persists, please logout and login again. Ignore if none.']);
-    } else if(req.params.info) {
+    if(queryObject.critical) {
+        res.send(['Downtime 12 Dec. 01:00 AM to 02:00AM']);
+    } else if(queryObject.info) {
         res.send(['New version(0.0.6) is live now. Please update. Ignore if already updated.']);
     } else {
         res.send([]);
