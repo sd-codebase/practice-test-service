@@ -110,7 +110,7 @@ export async function getNotifications(req, res, next) {
         res.send([]);
     } else if(queryObject.info) {
         res.send([
-            'We are back again. Downtime Ended at 12 Dec@04:30AM. Thank you for your support.',
+            // 'We are back again. Downtime Ended at 12 Dec@04:30AM. Thank you for your support.',
             'New version(0.0.6) is live now. Please update. Ignore if already updated.'
         ]);
     } else {
