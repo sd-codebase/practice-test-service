@@ -1,6 +1,7 @@
 import { TestModel as Test, GuestTestModel as GuestTest} from './test.model';
 import { QuestionService } from '../question/question.service';
 import { MockTestService } from '../mock-test/mock-test.service';
+import { UserActivityModel } from '../user/user-activity.model';
 import { isEqual } from 'lodash';
 
 export class TestService {
@@ -203,6 +204,9 @@ export class TestService {
 
     static async createTestUsingConfig(userId, testConfig) {
         try{
+            //Update User Activity
+            await TestService.saveUserActivity(userId);
+
             let {data: questions} = await QuestionService.getQuestionsBySectionCriteria(testConfig.sections, testConfig.course);
             let paragraphs = [];
             questions = questions.map( (question, index) => {
@@ -482,6 +486,23 @@ export class TestService {
             return 2;
         } else if(answersLength === 3){
             return correctOptions;
+        }
+    }
+
+    static async saveUserActivity(userId) {
+        try{
+            const updatedAt = Date.now();
+            const userActivity = await UserActivityModel.findOne({userId}).exec();
+            if (!userActivity) {
+                let userActivityRec = new UserActivityModel({userId, updatedAt});
+                await userActivityRec.save();
+                return {status: 1};
+            } else {
+                await UserActivityModel.updateOne({userId}, {updatedAt}).exec();
+                return {status: 1};
+            }
+        } catch(e) {
+            console.log(e);
         }
     }
 }
