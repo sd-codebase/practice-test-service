@@ -246,6 +246,10 @@ export class QuestionService {
             return {status: 0, err};
         }
     }
+
+    static async updateSubjectOfQuestion(data) {
+        return await Question.updateMany({'chapter.subject':data.subject,'chapter.chapter':data.chapter},{'chapter.subject':data.subjectToUpdate}).exec();
+    }
 }
 
 class QuestionToUpdate{

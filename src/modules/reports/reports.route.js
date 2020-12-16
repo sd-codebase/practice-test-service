@@ -1,7 +1,11 @@
 import express from '../../lib/express.lib';
-// import * as User from './user.controller';
+import * as ReportController from './reports.controller';
 
 const ReportsRoutes = express.Router();
+
+ReportsRoutes.get('/progress-analysis-line', ReportController.getLineChartReport);
+ReportsRoutes.get('/progress-analysis-pie', ReportController.getPieChartReport);
+ReportsRoutes.get('/progress-analysis-bar', ReportController.getBarChartReport);
 
 ReportsRoutes.get('/progress-analysis-line', (req, res) => { res.send( [
     ['12-sep', 24],

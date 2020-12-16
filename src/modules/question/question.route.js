@@ -17,5 +17,6 @@ QuestionRoutes.post('/import', Question.uploadQuestions);
 QuestionRoutes.post('/verify', Question.verifyQuestion);
 QuestionRoutes.post('/report', Question.saveReportQuestions);
 QuestionRoutes.post('/verify-update', Question.updateAndVerifyQuestion);
+QuestionRoutes.post('/update-subject', Question.updateSubjectOfQuestion);
 
 export { QuestionRoutes };

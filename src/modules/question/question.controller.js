@@ -71,6 +71,11 @@ export async function saveReportQuestions (req, res, next) {
     res.send(data);
 };
 
+export async function updateSubjectOfQuestion (req, res, next) {
+    const data = await QuestionService.updateSubjectOfQuestion(req.body);
+    res.send(data);
+};
+
 export { 
     getQuestion, getQuestions, createQuestion,
     uploadQuestions, getAnswer, verifyQuestion,
