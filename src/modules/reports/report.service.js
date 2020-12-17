@@ -31,7 +31,7 @@ export class ReportService {
                 return {
                     testName: test.testName,
                     percentage: test.percentage,
-                    dt: moment(test.updatedAt, 'YYYY-MM-DD').format('MMM d'),
+                    dt: moment(test.updatedAt, 'YYYY-MM-DD').format('MMM DD'),
                 }
             });
             const groups = {};
