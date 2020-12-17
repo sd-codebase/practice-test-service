@@ -28,7 +28,7 @@ const mockTestsUrl = `/${API}/${ROUTES.MockTest}/`;
 const reportsUrl = `/${API}/${ROUTES.Reports}/`;
 
 export const authRoutes = [
-    // dashboardUrl, testsUrl, questionsUrl,
-    // chaptersUrl, notesUrl, mockTestsUrl,
-    // scriptsUrl, reportsUrl,
+    dashboardUrl, testsUrl, questionsUrl,
+    chaptersUrl, notesUrl, mockTestsUrl,
+    scriptsUrl, reportsUrl,
 ];
