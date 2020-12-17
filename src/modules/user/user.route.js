@@ -5,7 +5,8 @@ const UserRoutes = express.Router();
 
 
 // a simple test url to check that all of our files are communicating correctly.
-UserRoutes.get('/notifications', User.getNotifications);//User.getNotifications
+UserRoutes.get('/notifications', User.getNotifications);
+UserRoutes.get('/app-version', User.getAppVersion);
 
 UserRoutes.post('/get-user-for-verification', User.getUserByDetails);
 UserRoutes.get('/courses', User.getCourses);

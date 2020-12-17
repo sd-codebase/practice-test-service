@@ -103,6 +103,12 @@ export async function saveUserWithDeviceId(req, res, next) {
     res.send(data);
 }
 
+export async function getAppVersion(req, res, next) {
+    const {status, data, err} = await UserService.getAppVersion();
+    if(status === 0) res.status(500).send(err);
+    res.send(data);
+}
+
 export async function getNotifications(req, res, next) {
     const queryObject = url.parse(req.url,true).query;
     // res.send([]);

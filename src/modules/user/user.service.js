@@ -1,4 +1,4 @@
-import { UserModel as User, GuestUserModel as GuestUser, GuestUserGroupModel as Group} from './user.model';
+import { UserModel as User, GuestUserModel as GuestUser, GuestUserGroupModel as Group, AppVersionModel as AppVersion} from './user.model';
 import { ApiEndpointsModel } from '../api-endpoints/api-endpoint.model';
 import { generateJWTToken, verifyJWTToken } from './../../utils/auth';
 import { sendMail } from './../../utils/email-sending.util';
@@ -426,6 +426,21 @@ export class UserService {
             return {
                 status: 1,
                 data: courses
+            };
+        } catch (err){
+            return {
+                status: 0,
+                err
+            };
+        }
+    }
+
+    static async getAppVersion() {
+        try {
+            let version = await AppVersion.findOne({}).sort({version:-1}).exec();
+            return {
+                status: 1,
+                data: version
             };
         } catch (err){
             return {

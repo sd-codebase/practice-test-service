@@ -33,8 +33,17 @@ let GuestUserGroupSchema = new Schema({
     updatedAt: {type: Date, default: Date.now()}
 });
 
+let AppVersionSchema = new Schema({
+    version: {type: String},
+    isMajorUpdate: {type: Boolean},
+    updateInfo: {type: String},
+    updateDate: {type: String},
+    createdAt: {type: Date, default: Date.now()},
+});
+
 const UserModel = mongoose.model('User', UserSchema);
 const GuestUserModel = mongoose.model('GuestUser', GuestUserSchema);
 const GuestUserGroupModel = mongoose.model('GuestUserGroup', GuestUserGroupSchema);
+const AppVersionModel = mongoose.model('AppVersion', AppVersionSchema);
 
-export {UserModel, GuestUserModel, GuestUserGroupModel};
+export {UserModel, GuestUserModel, GuestUserGroupModel, AppVersionModel};
