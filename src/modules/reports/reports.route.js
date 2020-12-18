@@ -5,7 +5,8 @@ const ReportsRoutes = express.Router();
 
 ReportsRoutes.get('/progress-analysis-line', ReportController.getLineChartReport);
 ReportsRoutes.get('/progress-analysis-pie', ReportController.getPieChartReport);
-ReportsRoutes.get('/progress-analysis-bar', ReportController.getBarChartReport);
+// ReportsRoutes.get('/progress-analysis-bar', ReportController.getBarChartReport);
+ReportsRoutes.get('/progress-analysis-bar', (req, res) => { res.send([])});
 
 ReportsRoutes.get('/progress-analysis-line', (req, res) => { res.send( [
     ['12-sep', 24],
@@ -21,6 +22,7 @@ ReportsRoutes.get('/progress-analysis-pie', (req, res) => { res.send([
     ['Skipped', 8],
   ])}
 );
+
 ReportsRoutes.get('/progress-analysis-bar', (req, res) => { res.send([
     ['Chapter 1', 10, 12, 28],
     ['Chapter 2', 5, 13, 32],
