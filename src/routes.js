@@ -11,9 +11,9 @@ import { ReportsRoutes } from './modules/reports/reports.route';
 
 
 function enableRoutes(app) {
-    app.use('/', function(req, res, next){
-        res.end('Assessment portal services are in maintenance mode.')
-    });
+    // app.use('/', function(req, res, next){
+    //     res.end('Assessment portal services are in maintenance mode.')
+    // });
     app.use(`/${API}/${ROUTES.Dashboard}`, DashboardRoutes);
     app.use(`/${API}/${ROUTES.Test}`, TestRoutes);
     app.use(`/${API}/${ROUTES.Question}`, QuestionRoutes);
