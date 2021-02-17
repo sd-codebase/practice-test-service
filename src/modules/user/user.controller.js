@@ -113,11 +113,13 @@ export async function getNotifications(req, res, next) {
     const queryObject = url.parse(req.url,true).query;
     // res.send([]);
     if(queryObject.critical) {
-        res.send([]);
+        res.send([
+            'Emergency Downtime on Thursday 18 Feb from 00:30AM to 02:00AM. Strongly recommended to not use app.',
+        ]);
     } else if(queryObject.info) {
         res.send([
             // 'We are back again. Downtime Ended at 12 Dec@04:30AM. Thank you for your support.',
-            'New version(0.0.7) is live now. Please update. Ignore if already updated.'
+            // 'New version(0.0.7) is live now. Please update. Ignore if already updated.'
         ]);
     } else {
         res.send([]);

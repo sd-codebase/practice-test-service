@@ -14,3 +14,8 @@ export async function updateChapters (req, res, next) {
     ScriptService.updateChapters()
     res.send({status: 1, message: 'Job started'});
 };
+
+export async function deleteInactiveUsersData (req, res, next) {
+    ScriptService.deleteInactiveUsersData()
+    res.send({status: 1, message: 'Job started'});
+};

@@ -1,4 +1,6 @@
 import { QuestionModel } from '../question/question.model';
+import { UserActivityModel } from '../user/user-activity.model';
+import { TestModel } from '../test/test.model';
 import { ChapterModel } from './../chapter/chapter.model';
 import { COURSES } from '../test/test.model';
 
@@ -79,6 +81,19 @@ export class ScriptService {
         } catch (err){
             console.log(err)
             return err;
+        }
+    }
+
+    static async deleteInactiveUsersData() {
+        try {
+            const users = await UserActivityModel.find({"updatedAt": {"$lt": new Date("2021-01-01")}}, {"userId": 1, "_id": 0}).exec();
+            const userIds = users.map(user => user.userId);
+            // console.log(userIds);
+            const activityModel = await UserActivityModel.deleteMany({"userId": {$in: userIds}}).exec();
+            const testModel = await TestModel.deleteMany({"userId": {$in: userIds}}).exec();
+            console.log(activityModel, testModel);
+        } catch (error) {
+            console.log(error)
         }
     }
 }
