@@ -114,11 +114,12 @@ export async function getNotifications(req, res, next) {
     // res.send([]);
     if(queryObject.critical) {
         res.send([
-            'Emergency Downtime on Thursday 18 Feb from 00:30AM to 02:00AM. Strongly recommended to not use app.',
+            // 'Emergency Downtime on Thursday 18 Feb from 00:30AM to 02:00AM. Strongly recommended to not use app.',
         ]);
     } else if(queryObject.info) {
         res.send([
-            // 'We are back again. Downtime Ended at 12 Dec@04:30AM. Thank you for your support.',
+            'Downtime Ended: We are back again. Downtime Ended at 18 Feb@00:55AM. Thank you for your support.',
+            'Downtime Ended. If you face any issue, please logout and login again. If problem still persists, write us at kslabs.care@gmail.com.',
             // 'New version(0.0.7) is live now. Please update. Ignore if already updated.'
         ]);
     } else {
