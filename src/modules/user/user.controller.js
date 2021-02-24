@@ -118,8 +118,8 @@ export async function getNotifications(req, res, next) {
         ]);
     } else if(queryObject.info) {
         res.send([
-            'Downtime Ended: We are back again. Downtime Ended at 18 Feb@00:55AM. Thank you for your support.',
-            'Downtime Ended. If you face any issue, please logout and login again. If problem still persists, write us at kslabs.care@gmail.com.',
+            // 'Downtime Ended: We are back again. Downtime Ended at 18 Feb@00:55AM. Thank you for your support.',
+            // 'Downtime Ended. If you face any issue, please logout and login again. If problem still persists, write us at kslabs.care@gmail.com.',
             // 'New version(0.0.7) is live now. Please update. Ignore if already updated.'
         ]);
     } else {
