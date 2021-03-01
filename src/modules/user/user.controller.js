@@ -117,11 +117,17 @@ export async function getNotifications(req, res, next) {
             // 'Emergency Downtime on Thursday 18 Feb from 00:30AM to 02:00AM. Strongly recommended to not use app.',
         ]);
     } else if(queryObject.info) {
-        res.send([
-            // 'Downtime Ended: We are back again. Downtime Ended at 18 Feb@00:55AM. Thank you for your support.',
-            // 'Downtime Ended. If you face any issue, please logout and login again. If problem still persists, write us at kslabs.care@gmail.com.',
-            // 'New version(0.0.7) is live now. Please update. Ignore if already updated.'
-        ]);
+        if (queryObject.version === '0.0.7') {
+            res.send([
+                'New version(0.0.8) is live now. Please consider updating the app. We will stop services for v0.0.7 from 10th March.'
+            ]);
+        } else {
+            res.send([
+                // 'Downtime Ended: We are back again. Downtime Ended at 18 Feb@00:55AM. Thank you for your support.',
+                // 'Downtime Ended. If you face any issue, please logout and login again. If problem still persists, write us at kslabs.care@gmail.com.',
+                // 'New version(0.0.7) is live now. Please update. Ignore if already updated.'
+            ]);
+        }
     } else {
         res.send([]);
     }
