@@ -117,7 +117,7 @@ export async function getNotifications(req, res, next) {
             // 'Emergency Downtime on Thursday 18 Feb from 00:30AM to 02:00AM. Strongly recommended to not use app.',
         ]);
     } else if(queryObject.info) {
-        if (queryObject.version === '0.0.7') {
+        if (!queryObject.version || queryObject.version !== '0.0.8') {
             res.send([
                 'New version(0.0.8) is live now. Please consider updating the app. We will stop services for v0.0.7 from 10th March.'
             ]);
